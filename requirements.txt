@@ -1,0 +1,7 @@
+nibabel
+pydicom
+numpy
+pandas
+torch
+torchvision
+diskcache
