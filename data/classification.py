@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import pandas as pd
 from enums.contrast import Contrasts
 import os
-
+from diskcache import Cache
 
 @dataclass
 class BrainSlice:
@@ -38,12 +38,15 @@ class BrainSlice:
 
 
 class ClassificationDataset(Dataset):
-    def __init__(self) -> None:
+    def __init__(self, full_augment: bool, use_cache: bool = False, cache_dir = './cache/') -> None:
         self.path = "data/classification/"
         targets = pd.read_csv(f"{self.path}train_labels.csv")
         self._targets = targets.set_index("ID", inplace=True)['MGMT_value'].to_dict()
         
+        self.full_augment = full_augment
         self.candidates = os.walk(os.path.join(self.path, 'train/')).__next__()[1]
+        self._cache = Cache(directory=cache_dir)
+        self._use_cache = use_cache
         
     def load_candidate(self, candidate: str) -> tuple[torch.Tensor, torch.Tensor]:
         path = os.path.join(self.path, 'train/', candidate)
@@ -60,9 +63,15 @@ class ClassificationDataset(Dataset):
             
         label = torch.as_tensor(self._targets[candidate])
             
+        if self._use_cache:
+            self._cache[candidate] = torch.stack(images), torch.as_tensor([label], dtype=torch.float)
+            
         return torch.stack(images), torch.as_tensor([label], dtype=torch.float)
         
     def __getitem__(self, index: int) -> tuple[torch.Tensor, torch.Tensor]:
         candaidate = self.candidates[index]
+        
+        if self._use_cache and candaidate in self._cache:
+            return self._cache[candaidate]
         
         return self.load_candidate(candaidate)
