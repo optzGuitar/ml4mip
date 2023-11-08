@@ -28,7 +28,7 @@ class SegmentationDataset(Dataset):
         images = {}
         for contrast in Contrasts.values():
             image_path = os.path.join(
-                path, contrast + "/", f"{candidate}_{contrast.lower()}.nii.gz")
+                path, f"{candidate}_{contrast.lower()}.nii.gz")
 
             images[contrast] = tio.ScalarImage(image_path)
 
