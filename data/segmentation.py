@@ -33,7 +33,7 @@ class SegmentationDataset(Dataset):
             images[contrast] = tio.ScalarImage(image_path)
 
         images['label'] = tio.LabelMap(os.path.join(
-            path, contrast + "/", f"{candidate}_seg.nii.gz"))
+            path, f"{candidate}_seg.nii.gz"))
 
         data = tio.Subject(**images)
 
