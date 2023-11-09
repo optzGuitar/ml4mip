@@ -17,15 +17,19 @@ class PreActivateDoubleConv(nn.Module):
     def forward(self, x):
         return self.double_conv(x)
 
+
 class PreActivateResUpBlock(nn.Module):
     def __init__(self, in_channels, out_channels):
         super(PreActivateResUpBlock, self).__init__()
         self.ch_avg = nn.Sequential(
-            nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=1, bias=False),
+            nn.Conv2d(in_channels, out_channels,
+                      kernel_size=1, stride=1, bias=False),
             nn.BatchNorm2d(out_channels))
-        self.up_sample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
+        self.up_sample = nn.Upsample(
+            scale_factor=2, mode='bilinear', align_corners=True)
         self.ch_avg = nn.Sequential(
-            nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=1, bias=False),
+            nn.Conv2d(in_channels, out_channels,
+                      kernel_size=1, stride=1, bias=False),
             nn.BatchNorm2d(out_channels))
         self.double_conv = PreActivateDoubleConv(in_channels, out_channels)
 
@@ -34,11 +38,13 @@ class PreActivateResUpBlock(nn.Module):
         x = torch.cat([x, skip_input], dim=1)
         return self.double_conv(x) + self.ch_avg(x)
 
+
 class PreActivateResBlock(nn.Module):
     def __init__(self, in_channels, out_channels):
         super(PreActivateResBlock, self).__init__()
         self.ch_avg = nn.Sequential(
-            nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=1, bias=False),
+            nn.Conv2d(in_channels, out_channels,
+                      kernel_size=1, stride=1, bias=False),
             nn.BatchNorm2d(out_channels))
 
         self.double_conv = PreActivateDoubleConv(in_channels, out_channels)
@@ -49,6 +55,7 @@ class PreActivateResBlock(nn.Module):
         out = self.double_conv(x)
         out = out + identity
         return self.down_sample(out), out
+
 
 class DoubleConv(nn.Module):
     def __init__(self, in_channels, out_channels):
@@ -65,11 +72,13 @@ class DoubleConv(nn.Module):
     def forward(self, x):
         return self.double_conv(x)
 
+
 class ResBlock(nn.Module):
     def __init__(self, in_channels, out_channels):
         super(ResBlock, self).__init__()
         self.downsample = nn.Sequential(
-            nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=1, bias=False),
+            nn.Conv2d(in_channels, out_channels,
+                      kernel_size=1, stride=1, bias=False),
             nn.BatchNorm2d(out_channels))
         self.double_conv = DoubleConv(in_channels, out_channels)
         self.down_sample = nn.MaxPool2d(2)
@@ -93,16 +102,19 @@ class DownBlock(nn.Module):
         down_out = self.down_sample(skip_out)
         return (down_out, skip_out)
 
+
 class UpBlock(nn.Module):
     def __init__(self, in_channels, out_channels):
         super(UpBlock, self).__init__()
-        self.up_sample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
+        self.up_sample = nn.Upsample(
+            scale_factor=2, mode='bilinear', align_corners=True)
         self.double_conv = DoubleConv(in_channels, out_channels)
 
     def forward(self, down_input, skip_input):
         x = self.up_sample(down_input)
         x = torch.cat([x, skip_input], dim=1)
         return self.double_conv(x)
+
 
 class UNet(nn.Module):
     def __init__(self, out_classes=1):
@@ -135,6 +147,7 @@ class UNet(nn.Module):
         x = self.conv_last(x)
         return x
 
+
 class DeepResUNet(nn.Module):
     def __init__(self, out_classes=1):
         super(DeepResUNet, self).__init__()
@@ -166,10 +179,12 @@ class DeepResUNet(nn.Module):
         x = self.conv_last(x)
         return x
 
+
 class ResUNet(nn.Module):
     """
     Hybrid solution of resnet blocks and double conv blocks
     """
+
     def __init__(self, out_classes=1):
         super(ResUNet, self).__init__()
 
@@ -200,6 +215,7 @@ class ResUNet(nn.Module):
         x = self.conv_last(x)
         return x
 
+
 class ONet(nn.Module):
     def __init__(self, alpha=470, beta=40, out_classes=1):
         super(ONet, self).__init__()
@@ -219,7 +235,6 @@ class ONet(nn.Module):
 
         self.conv_last = nn.Conv2d(64, 1, kernel_size=1)
         self.input_output_conv = nn.Conv2d(2, 1, kernel_size=1)
-
 
     def forward(self, inputs):
         input_tensor, bounding = inputs
