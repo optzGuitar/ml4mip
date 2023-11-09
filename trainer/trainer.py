@@ -1,13 +1,14 @@
 import torch
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
+from torch import jit
 
 
 class Trainer:
     def __init__(self) -> None:
         self._summary_writer = SummaryWriter()
 
-    @torch.jit
+    @jit.script
     def train(self, model, optimizer, loss_fn, train_loader, val_loader, lr_shedule, epochs=20, device='cpu'):
         step = 0
         model = model.to(device).to(torch.float16)
