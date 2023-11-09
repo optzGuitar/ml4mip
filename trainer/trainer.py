@@ -9,13 +9,13 @@ class Trainer:
 
     def train(self, model, optimizer, loss_fn, train_loader, val_loader, lr_shedule, epochs=20, device='cpu'):
         step = 0
-        model = model.to(device)
+        model = model.to(device).to(torch.short)
         for epoch in tqdm(range(epochs)):
             for subject in train_loader:
                 X = torch.stack(
-                    [i['data'] for k, i in subject.items() if k != 'label']).squeeze(2).permute(1, 0, 2, 3, 4).to(device).to(torch.float)
+                    [i['data'] for k, i in subject.items() if k != 'label']).squeeze(2).permute(1, 0, 2, 3, 4).to(device)
                 y = subject['label']['data'].squeeze(
-                    2).permute(1, 0, 2, 3, 4).to(device).to(torch.float)
+                    2).permute(1, 0, 2, 3, 4).to(device)
 
                 optimizer.zero_grad()
 
