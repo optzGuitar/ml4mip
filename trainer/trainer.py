@@ -8,7 +8,6 @@ class Trainer:
     def __init__(self) -> None:
         self._summary_writer = SummaryWriter()
 
-    @jit.script
     def train(self, model, optimizer, loss_fn, train_loader, val_loader, lr_shedule, epochs=20, device='cpu'):
         step = 0
         model = model.to(device).to(torch.float16)
