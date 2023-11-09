@@ -16,7 +16,15 @@ class SegmentationDataset(Dataset):
         self._use_cache = use_cache
         self._cache = Cache(directory=cache_dir)
 
-        self.__transforms = tio.Compose([])
+        self.__transforms = tio.Compose([
+            tio.RescaleIntensity((0, 1)),
+            tio.OneOf(
+                {tio.RandomAffine(): 0.8,
+                 tio.RandomElasticDeformation(): 0.2
+                 },
+                p=0.75),
+            tio.Crop((20, 20, 20)),
+        ])
 
     def __len__(self) -> int:
         return len(self.candidates)
