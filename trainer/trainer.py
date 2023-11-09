@@ -7,15 +7,16 @@ class Trainer:
     def __init__(self) -> None:
         self._summary_writer = SummaryWriter()
 
+    @torch.jit
     def train(self, model, optimizer, loss_fn, train_loader, val_loader, lr_shedule, epochs=20, device='cpu'):
         step = 0
-        model = model.to(device).to(torch.short)
+        model = model.to(device).to(torch.float16)
         for epoch in tqdm(range(epochs)):
             for subject in train_loader:
                 X = torch.stack(
-                    [i['data'] for k, i in subject.items() if k != 'label']).squeeze(2).permute(1, 0, 2, 3, 4).to(device)
+                    [i['data'] for k, i in subject.items() if k != 'label']).squeeze(2).permute(1, 0, 2, 3, 4).to(device).to(torch.float16)
                 y = subject['label']['data'].squeeze(
-                    2).permute(1, 0, 2, 3, 4).to(device)
+                    2).permute(1, 0, 2, 3, 4).to(device).to(torch.float16)
 
                 optimizer.zero_grad()
 
