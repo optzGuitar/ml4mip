@@ -12,9 +12,9 @@ class Trainer:
         for epoch in tqdm(range(epochs)):
             for subject in train_loader:
                 X = torch.stack(
-                    [i['data'] for k, i in subject.items() if k != 'label']).squeeze(2).permute(1, 0, 2, 3, 4).to(device)
+                    [i['data'] for k, i in subject.items() if k != 'label']).squeeze(2).permute(1, 0, 2, 3, 4).to(device).to(torch.float)
                 y = subject['label']['data'].squeeze(
-                    2).permute(1, 0, 2, 3, 4).to(device)
+                    2).permute(1, 0, 2, 3, 4).to(device).to(torch.float)
 
                 optimizer.zero_grad()
 
