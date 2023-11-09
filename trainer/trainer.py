@@ -1,3 +1,4 @@
+import torch
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
@@ -9,8 +10,10 @@ class Trainer:
     def train(self, model, optimizer, loss_fn, train_loader, val_loader, lr_shedule, epochs=20, device='cpu'):
         step = 0
         for epoch in tqdm(range(epochs)):
-            for X, y in train_loader:
-                X, y = X.to(device), y.to(device)
+            for subject in train_loader:
+                X = torch.stack(
+                    [i.data for i in subject.get_images()]).to(device)
+                y = subject.label.data.to(device)
 
                 optimizer.zero_grad()
 
