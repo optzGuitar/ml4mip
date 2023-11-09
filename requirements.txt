@@ -5,3 +5,5 @@ pandas
 torch
 torchvision
 diskcache
+torchio
+tensorboard
