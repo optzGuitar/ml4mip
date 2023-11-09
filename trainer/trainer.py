@@ -9,6 +9,7 @@ class Trainer:
 
     def train(self, model, optimizer, loss_fn, train_loader, val_loader, lr_shedule, epochs=20, device='cpu'):
         step = 0
+        model = model.to(device)
         for epoch in tqdm(range(epochs)):
             for subject in train_loader:
                 X = torch.stack(
