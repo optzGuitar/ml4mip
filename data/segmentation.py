@@ -25,7 +25,7 @@ class SegmentationDataset(Dataset):
                  tio.RandomElasticDeformation(): 0.2
                  },
                 p=0.75),
-            tio.EnsureShapeMultiple(target_multiple=(3, 3, 3)),
+            tio.EnsureShapeMultiple(target_multiple=(2, 2, 2)),
         ])
 
     def __len__(self) -> int:
