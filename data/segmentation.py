@@ -5,6 +5,7 @@ import nibabel as nib
 from enums.contrast import Contrasts
 from diskcache import Cache
 import torchio as tio
+from monai.transforms import Compose, LoadImage,  EnsureChannelFirst, Orientation, Spacing,  NormalizeIntensity,  ScaleIntensity
 
 
 class SegmentationDataset(Dataset):
@@ -17,13 +18,14 @@ class SegmentationDataset(Dataset):
         self._cache = Cache(directory=cache_dir)
 
         self.__transforms = tio.Compose([
+            tio.ZNormalization(masking_method=tio.ZNormalization.mean),
             tio.RescaleIntensity((0, 1)),
             tio.OneOf(
                 {tio.RandomAffine(): 0.8,
                  tio.RandomElasticDeformation(): 0.2
                  },
                 p=0.75),
-            tio.Crop((20, 20, 20)),
+            tio.EnsureShapeMultiple(target_multiple=(2, 2, 2)),
         ])
 
     def __len__(self) -> int:

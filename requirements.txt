@@ -7,3 +7,4 @@ torchvision
 diskcache
 torchio
 tensorboard
+monai
