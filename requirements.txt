@@ -6,5 +6,5 @@ torch
 torchvision
 diskcache
 torchio
-tensorboard
+wandb
 monai

@@ -2,12 +2,10 @@ import torch
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 from torch import jit
+import wandb
 
 
 class Trainer:
-    def __init__(self) -> None:
-        self._summary_writer = SummaryWriter()
-
     def train(self, model, optimizer, loss_fn, train_loader, val_loader, lr_shedule, epochs=20, device='cpu', acc_steps=32):
         step = 0
         model = model.to(device).to(torch.float16)
@@ -24,8 +22,7 @@ class Trainer:
                 loss = loss_fn(output, y)
                 loss /= acc_steps
                 loss.backward()
-                self._summary_writer.add_scalar(
-                    'Loss/train', loss.item(), step)
+                wandb.log({"loss": loss})
                 step += 1
 
                 if i % acc_steps == 0 or i == len(train_loader) - 1:
