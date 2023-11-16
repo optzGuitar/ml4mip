@@ -13,9 +13,9 @@ class CombinationLoss(LossWrapper):
         super().__init__(log_individual_losses=log_individual_losses)
         # for alpha, beta = 0.5 same as dice loss
         self._tversky_loss = smp_losses.TverskyLoss(
-            mode='multiclass', smooth=1e-6)
+            mode=smp_losses.MULTILABEL_MODE, smooth=1e-6)
         self._lovasz_loss = smp_losses.LovaszLoss(
-            mode='multiclass')
+            mode=smp_losses.MULTICLASS_MODE)
         self._cross_entropy = nn.CrossEntropyLoss(label_smoothing=0.05)
 
     def forward(self, X_hat: torch.Tensor, X: torch.Tensor) -> torch.Tensor:
