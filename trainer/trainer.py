@@ -54,10 +54,10 @@ class Trainer:
         for i, subject in enumerate(loader):
             X = self.__format_tensor(torch.stack(
                 [i['data'] for k, i in subject.items() if k != 'label']), device=device)
-            y = self.__format_tensor(subject['label']['data'], device=device)
+            y = self.__format_tensor(
+                subject['label']['data'].squeeze(), device=device)
 
-            output = model(X)
-            output = output.squeeze(0)
+            output = model(X).squeeze()
             criterion.set_step(step)
             loss = criterion(output, y)
             loss /= acc_steps
