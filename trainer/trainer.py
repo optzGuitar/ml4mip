@@ -57,6 +57,7 @@ class Trainer:
             y = self.__format_tensor(subject['label']['data'], device=device)
 
             output = model(X)
+            output = output.squeeze(1).unsqueeze(0)
             criterion.set_step(step)
             loss = criterion(output, y)
             loss /= acc_steps
