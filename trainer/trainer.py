@@ -17,7 +17,10 @@ class Trainer:
         step = 0
         model = model.to(torch.float16).to(device)
 
-        wandb.init(project="ml4mip")
+        wandb.init(project="ml4mip", config={
+            "model": model.__class__.__name__
+        }
+        )
         wandb.watch(model, log="all", log_freq=100)
 
         optimizer.zero_grad()
