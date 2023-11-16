@@ -55,7 +55,7 @@ class Trainer:
             X = self.__format_tensor(torch.stack(
                 [i['data'] for k, i in subject.items() if k != 'label']), device=device)
             y = self.__format_tensor(
-                subject['label']['data'].squeeze(), device=device)
+                subject['label']['data'], device=device).squeeze()
 
             output = model(X).squeeze()
             criterion.set_step(step)
