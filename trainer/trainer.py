@@ -1,12 +1,19 @@
+from typing import Optional
 import torch
 from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.optim as optim
 import wandb
 
+from losses.loss_wrapper import LossWrapper
+
 
 class Trainer:
-    def train(self, model, optimizer, loss_fn, train_loader, val_loader, lr_shedule, epochs=20, device='cpu', acc_steps=32):
+    def __init__(self, n_classes: int = 5, segmentation_log_budget: int = 3) -> None:
+        self._classes = list(range(n_classes))
+        self._segmentation_log_budget = segmentation_log_budget
+
+    def train(self, model: nn.Module, optimizer: optim.Optimizer, loss_fn: LossWrapper, train_loader: DataLoader, val_loader: DataLoader, lr_shedule: Optional[optim.lr_scheduler.LRScheduler], epochs: int = 20, device: str = 'cpu', acc_steps: int = 32):
         step = 0
         model = model.to(torch.float16).to(device)
 
@@ -30,13 +37,15 @@ class Trainer:
     def __format_tensor(self, tensor: torch.Tensor, device: torch.device):
         return tensor.squeeze(2).permute(1, 0, 2, 3, 4).to(torch.float16).to(device)
 
-    def _do_phase(self, model: nn.Module, loader: DataLoader, criteriom: nn.Module, optimizer: optim.Optimizer, device: torch.device, acc_steps: int, train: bool = True, step: int = 0, metrics: list[nn.Module] = None):
+    def _do_phase(self, model: nn.Module, loader: DataLoader, criterion: LossWrapper, optimizer: optim.Optimizer, device: torch.device, acc_steps: int, train: bool = True, step: int = 0, metrics: list[nn.Module] = None):
         if train:
             model.train()
         else:
             model.eval()
 
         prefix = "train" if train else "val"
+        criterion.set_prefix(prefix + "/")
+        seg_buget = self._segmentation_log_budget
 
         optimizer.zero_grad()
         for i, subject in enumerate(loader):
@@ -45,7 +54,8 @@ class Trainer:
             y = self.__format_tensor(subject['label']['data'], device=device)
 
             output = model(X)
-            loss = criteriom(output, y)
+            criterion.set_step(step)
+            loss = criterion(output, y)
             loss /= acc_steps
 
             if train:
@@ -57,6 +67,24 @@ class Trainer:
                                     for metric in metrics}
 
             wandb.log({f"{prefix}/loss": loss, **computed_metrics}, step=step)
+
+            if not train and seg_buget > 0:
+                shape = torch.as_tensor(X[0].shape) // 2
+                segmentation = wandb.Image(
+                    X[0, *shape].cpu().numpy(),
+                    masks={
+                        "ground_truth": {
+                            "mask_data": y[0, *shape].cpu().numpy(),
+                            "class_labels": self._classes
+                        },
+                        "predictions": {
+                            "mask_data": output[0, *shape].cpu().numpy(),
+                            "class_labels": self._classes
+                        },
+                    },
+                    caption="Segmentation")
+                wandb.log({f"{prefix}/segmentation": segmentation}, step=step)
+                seg_buget -= 1
 
             step += 1
 

@@ -1,21 +1,20 @@
-import torch
 from torch.utils.data import Dataset
 import os
 import nibabel as nib
 from enums.contrast import Contrasts
 from diskcache import Cache
 import torchio as tio
-from monai.transforms import Compose, LoadImage,  EnsureChannelFirst, Orientation, Spacing,  NormalizeIntensity,  ScaleIntensity
+# from monai.transforms import Compose, LoadImage,  EnsureChannelFirst, Orientation, Spacing,  NormalizeIntensity,  ScaleIntensity
 
 
 class SegmentationDataset(Dataset):
-    def __init__(self, full_augment: bool, use_cache: bool = False, cache_dir='./cache/'):
+    def __init__(self, full_augment: bool, num_classes: int, cache_dir='./cache/'):
         self.full_augment = full_augment
         self.basepath = "data/segmentation/train/"
         self.candidates = os.walk(self.basepath).__next__()[1]
 
-        self._use_cache = use_cache
         self._cache = Cache(directory=cache_dir)
+        self._num_classes = num_classes
 
         self.__transforms = tio.Compose([
             tio.ZNormalization(masking_method=tio.ZNormalization.mean),
@@ -44,6 +43,8 @@ class SegmentationDataset(Dataset):
 
         images['label'] = tio.LabelMap(os.path.join(
             path, f"{candidate}_seg.nii.gz"))
+        images['label'] = tio.OneHot(
+            num_classes=self._num_classes)(images['label'])
 
         data = tio.Subject(**images)
 
@@ -52,16 +53,12 @@ class SegmentationDataset(Dataset):
     def __getitem__(self, index: int) -> tio.Subject:
         candidate = self.candidates[index]
 
-        if self._use_cache and index in self._cache:
-            # TODO: also remove from cache after some time to allow new transformations
-            return self._cache[candidate]
-
-        candidate = self.load_candidate(candidate)
-        candidate.load()
+        if index in self._cache:
+            candidate = self._cache[index]
+        else:
+            candidate = self.load_candidate(candidate)
+            candidate.load()
+            self._cache[index] = candidate
 
         transformed_candidate = self.__transforms(candidate)
-
-        if self._use_cache:
-            self._cache[index] = transformed_candidate
-
         return transformed_candidate
