@@ -15,7 +15,7 @@ class CombinationLoss(LossWrapper):
         self._tversky_loss = smp_losses.TverskyLoss(
             mode='multiclass', smooth=1e-6)
         self._lovasz_loss = smp_losses.LovaszLoss(
-            mode='multiclass', smooth=1e-6)
+            mode='multiclass')
         self._cross_entropy = nn.CrossEntropyLoss(label_smoothing=0.05)
 
     def forward(self, X_hat: torch.Tensor, X: torch.Tensor) -> torch.Tensor:
