@@ -72,16 +72,16 @@ class Trainer:
             wandb.log({f"{prefix}/loss": loss, **computed_metrics}, step=step)
 
             if not train and seg_buget > 0:
-                shape = torch.as_tensor(X[0].shape) // 2
+                shape = torch.as_tensor(X[0, 0].shape) // 2
                 segmentation = wandb.Image(
-                    X[0, *shape].cpu().numpy(),
+                    X[0, 0, shape[0], shape[1], shape[2]].cpu().numpy(),
                     masks={
                         "ground_truth": {
-                            "mask_data": y[0, *shape].cpu().numpy(),
+                            "mask_data": y[0, 0, shape[0], shape[1], shape[2]].cpu().numpy(),
                             "class_labels": self._classes
                         },
                         "predictions": {
-                            "mask_data": output[0, *shape].cpu().numpy(),
+                            "mask_data": output[0, 0, shape[0], shape[1], shape[2]].cpu().numpy(),
                             "class_labels": self._classes
                         },
                     },
