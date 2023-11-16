@@ -3,6 +3,7 @@ import torch
 from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.optim as optim
+from tqdm import tqdm
 import wandb
 
 from losses.loss_wrapper import LossWrapper
@@ -19,9 +20,7 @@ class Trainer:
 
         wandb.init(project="ml4mip", config={
             "model": model.__class__.__name__
-        }
-        )
-        wandb.watch(model, log="all", log_freq=100)
+        })
 
         optimizer.zero_grad()
         for epoch in range(epochs):
@@ -51,7 +50,7 @@ class Trainer:
         seg_buget = self._segmentation_log_budget
 
         optimizer.zero_grad()
-        for i, subject in enumerate(loader):
+        for i, subject in tqdm(enumerate(loader), desc=f"{prefix} epoch", total=len(loader)):
             X = self.__format_tensor(torch.stack(
                 [i['data'] for k, i in subject.items() if k != 'label']), device=device)
             y = self.__format_tensor(
