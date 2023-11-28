@@ -69,6 +69,8 @@ class TrainLoop:
         self.weight_decay = weight_decay
         self.lr_anneal_steps = lr_anneal_steps
 
+        dist.init_process_group("blablub", rank=0, world_size=1)
+
         self.step = 0
         self.resume_step = 0
         self.global_batch = self.batch_size * dist.get_world_size()
