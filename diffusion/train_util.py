@@ -7,8 +7,8 @@ import torch.distributed as dist
 from torch.nn.parallel.distributed import DistributedDataParallel as DDP
 from torch.optim import AdamW
 
-from . import dist_util
-from .fp16_util import MixedPrecisionTrainer
+from diffusion.fp16_util import MixedPrecisionTrainer
+
 from .nn import update_ema
 from .resample import LossAwareSampler, UniformSampler
 
@@ -95,8 +95,8 @@ class TrainLoop:
             self.use_ddp = True
             self.ddp_model = DDP(
                 self.model,
-                device_ids=[dist_util.dev()],
-                output_device=dist_util.dev(),
+                device_ids=[self.device],
+                output_device=self.device,
                 broadcast_buffers=False,
                 bucket_cap_mb=128,
                 find_unused_parameters=False,
