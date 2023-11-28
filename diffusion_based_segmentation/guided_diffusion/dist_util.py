@@ -6,7 +6,6 @@ import io
 import os
 import socket
 
-import blobfile as bf
 #from mpi4py import MPI
 import torch as th
 import torch.distributed as dist
@@ -52,19 +51,6 @@ def dev():
     if th.cuda.is_available():
         return th.device(f"cuda")
     return th.device("cpu")
-
-
-def load_state_dict(path, **kwargs):
-    """
-    Load a PyTorch file without redundant fetches across MPI ranks.
-    """
-    mpigetrank=0
-    if mpigetrank==0:
-        with bf.BlobFile(path, "rb") as f:
-            data = f.read()
-    else:
-        data = None
-    return th.load(io.BytesIO(data), **kwargs)
 
 
 def sync_params(params):
