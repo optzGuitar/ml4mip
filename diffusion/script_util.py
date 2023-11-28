@@ -1,9 +1,9 @@
 import argparse
 import inspect
 
-from . import gaussian_diffusion as gd
-from .respace import SpacedDiffusion, space_timesteps
-from .unet import SuperResModel, UNetModel, EncoderUNetModel
+from diffusion import gaussian_diffusion as gd
+from diffusion.respace import SpacedDiffusion, space_timesteps
+from diffusion.unet import SuperResModel, UNetModel, EncoderUNetModel
 
 NUM_CLASSES = 5
 
@@ -157,7 +157,8 @@ def create_model(
         else:
             raise ValueError(f"unsupported image size: {image_size}")
     else:
-        channel_mult = tuple(int(ch_mult) for ch_mult in channel_mult.split(","))
+        channel_mult = tuple(int(ch_mult)
+                             for ch_mult in channel_mult.split(","))
 
     attention_ds = []
     for res in attention_resolutions.split(","):
@@ -167,7 +168,7 @@ def create_model(
         image_size=image_size,
         in_channels=5,
         model_channels=num_channels,
-        out_channels=2,#(3 if not learn_sigma else 6),
+        out_channels=2,  # (3 if not learn_sigma else 6),
         num_res_blocks=num_res_blocks,
         attention_resolutions=tuple(attention_ds),
         dropout=dropout,
@@ -252,7 +253,7 @@ def create_classifier(
         image_size=image_size,
         in_channels=3,
         model_channels=classifier_width,
-        out_channels=2,#1000,
+        out_channels=2,  # 1000,
         num_res_blocks=classifier_depth,
         attention_resolutions=tuple(attention_ds),
         channel_mult=channel_mult,

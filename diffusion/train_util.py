@@ -9,8 +9,8 @@ from torch.optim import AdamW
 
 from diffusion.fp16_util import MixedPrecisionTrainer
 
-from .nn import update_ema
-from .resample import LossAwareSampler, UniformSampler
+from diffusion.nn import update_ema
+from diffusion.resample import LossAwareSampler, UniformSampler
 
 
 # For ImageNet experiments, this was a good default value.

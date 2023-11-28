@@ -1,21 +1,21 @@
 """
 Train a diffusion model on images.
 """
-import sys
-import argparse
-sys.path.append("..")
-sys.path.append(".")
-from guided_diffusion import dist_util, logger
-from guided_diffusion.resample import create_named_schedule_sampler
-from guided_diffusion.bratsloader import BRATSDataset
-from guided_diffusion.script_util import (
+from diffusion.train_util import TrainLoop
+import torch as th
+from diffusion.script_util import (
     model_and_diffusion_defaults,
     create_model_and_diffusion,
     args_to_dict,
     add_dict_to_argparser,
 )
-import torch as th
-from guided_diffusion.train_util import TrainLoop
+from diffusion.resample import create_named_schedule_sampler
+from diffusion import dist_util, logger
+import sys
+import argparse
+sys.path.append("..")
+sys.path.append(".")
+
 
 def main():
     args = create_argparser().parse_args()
@@ -28,16 +28,16 @@ def main():
         **args_to_dict(args, model_and_diffusion_defaults().keys())
     )
     model.to(dist_util.dev())
-    schedule_sampler = create_named_schedule_sampler(args.schedule_sampler, diffusion,  maxt=1000)
+    schedule_sampler = create_named_schedule_sampler(
+        args.schedule_sampler, diffusion,  maxt=1000)
 
     logger.log("creating data loader...")
     ds = BRATSDataset(args.data_dir, test_flag=False)
-    datal= th.utils.data.DataLoader(
+    datal = th.utils.data.DataLoader(
         ds,
         batch_size=args.batch_size,
         shuffle=True)
     data = iter(datal)
-
 
     logger.log("training...")
     TrainLoop(
@@ -73,7 +73,7 @@ def create_argparser():
         ema_rate="0.9999",  # comma-separated list of EMA values
         log_interval=100,
         save_interval=5000,
-        resume_checkpoint='',#'"./results/pretrainedmodel.pt",
+        resume_checkpoint='',  # '"./results/pretrainedmodel.pt",
         use_fp16=False,
         fp16_scale_growth=1e-3,
     )
