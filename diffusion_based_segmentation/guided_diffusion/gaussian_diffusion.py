@@ -9,8 +9,6 @@ import torch.nn.functional as F
 from torchvision.utils import save_image
 import torch
 import math
-from visdom import Visdom
-viz = Visdom(port=8850)
 import numpy as np
 import torch as th
 from .train_util import visualize

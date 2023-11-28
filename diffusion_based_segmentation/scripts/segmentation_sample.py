@@ -6,8 +6,7 @@ numpy array. This can be used to produce samples for FID evaluation.
 import argparse
 import os
 import nibabel as nib
-from visdom import Visdom
-viz = Visdom(port=8850)
+
 import sys
 import random
 sys.path.append(".")
