@@ -24,7 +24,7 @@ class SegmentationDataset(Dataset):
                  tio.RandomElasticDeformation(): 0.2
                  },
                 p=0.75),
-            tio.CropOrPad((256, 256, 128)),
+            tio.CropOrPad((224, 224, 128)),
         ])
 
     def __len__(self) -> int:
