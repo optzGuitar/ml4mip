@@ -4,6 +4,7 @@ import os
 
 import torch as th
 from torch.optim import AdamW
+from tqdm import tqdm
 
 from diffusion.fp16_util import MixedPrecisionTrainer
 
@@ -93,52 +94,32 @@ class TrainLoop:
     def __format_tensor(self, tensor: th.Tensor, device: th.device):
         return tensor.squeeze(2).permute(1, 0, 2, 3, 4).to(th.float16).to(device)
 
-    def run_loop(self):
-        i = 0
-        data_iter = iter(self.dataloader)
-        while (
-            not self.lr_anneal_steps
-            or self.step + self.resume_step < self.lr_anneal_steps
-        ):
+    def run_loop(self, epochs=20):
+        for i in tqdm(range(epochs)):
+            for batch in self.dataloader:
+                X = self.__format_tensor(th.stack(
+                    [i['data'] for k, i in batch.items() if k != 'label']), device=self.device)
+                y = self.__format_tensor(
+                    batch['label']['data'], device=self.device).permute(1, 0, 2, 3, 4)
 
-            try:
-                batch = next(data_iter)
-            except StopIteration:
-                # StopIteration is thrown if dataset ends
-                # reinitialize data loader
-                data_iter = iter(self.dataloader)
-                batch = next(data_iter)
+                for slice_batch in X.permute(4, 0, 1, 2, 3):
+                    self.run_step(slice_batch, y)
 
-            X = self.__format_tensor(th.stack(
-                [i['data'] for k, i in batch.items() if k != 'label']), device=self.device)
-            y = self.__format_tensor(
-                batch['label']['data'], device=self.device).permute(1, 0, 2, 3, 4)
-
-            for slice_batch in X.permute(4, 0, 1, 2, 3):
-                self.run_step(slice_batch, None)
-
-            i += 1
-
-            if self.step % self.save_interval == 0:
-                self.save()
-                # Run for a finite amount of time in integration tests.
-                if os.environ.get("DIFFUSION_TRAINING_TEST", "") and self.step > 0:
-                    return
             self.step += 1
-        # Save the last checkpoint if it wasn't already saved.
-        if (self.step - 1) % self.save_interval != 0:
-            self.save()
 
-    def run_step(self, batch):
-        batch = batch
+    def run_step(self, batch, cond):
+        batch = th.cat((batch, cond), dim=1)
 
         cond = {}
         sample = self.forward_backward(batch, cond)
         took_step = self.mp_trainer.optimize(self.opt)
+
         if took_step:
             self._update_ema()
+
         self._anneal_lr()
         self.log_step()
+
         return sample
 
     def forward_backward(self, batch, cond):
