@@ -3,8 +3,6 @@ import functools
 import os
 
 import torch as th
-import torch.distributed as dist
-from torch.nn.parallel.distributed import DistributedDataParallel as DDP
 from torch.optim import AdamW
 
 from diffusion.fp16_util import MixedPrecisionTrainer
@@ -24,9 +22,6 @@ def visualize(img):
     _max = img.max()
     normalized_img = (img - _min) / (_max - _min)
     return normalized_img
-
-
-dist.init_process_group("gloo", rank=0, world_size=1)
 
 
 class TrainLoop:
@@ -74,7 +69,7 @@ class TrainLoop:
 
         self.step = 0
         self.resume_step = 0
-        self.global_batch = self.batch_size * dist.get_world_size()
+        self.global_batch = self.batch_size
         self.device = device
 
         self.sync_cuda = th.cuda.is_available()
@@ -93,20 +88,8 @@ class TrainLoop:
             copy.deepcopy(self.mp_trainer.master_params)
             for _ in range(len(self.ema_rate))
         ]
-
-        if th.cuda.is_available():
-            self.use_ddp = True
-            self.ddp_model = DDP(
-                self.model,
-                device_ids=[self.device],
-                output_device=self.device,
-                broadcast_buffers=False,
-                bucket_cap_mb=128,
-                find_unused_parameters=False,
-            )
-
-            self.use_ddp = False
-            self.ddp_model = self.model
+        self.use_ddp = False
+        self.ddp_model = self.model
 
     def __format_tensor(self, tensor: th.Tensor, device: th.device):
         return tensor.squeeze(2).permute(1, 0, 2, 3, 4).to(th.float16).to(device)
@@ -214,8 +197,6 @@ class TrainLoop:
 
     def log_step(self):
         pass
-
-        dist.barrier()
 
 
 def parse_resume_step_from_filename(filename):
