@@ -26,6 +26,9 @@ def visualize(img):
     return normalized_img
 
 
+dist.init_process_group("gloo", rank=0, world_size=1)
+
+
 class TrainLoop:
     def __init__(
         self,
@@ -68,8 +71,6 @@ class TrainLoop:
         self.schedule_sampler = schedule_sampler or UniformSampler(diffusion)
         self.weight_decay = weight_decay
         self.lr_anneal_steps = lr_anneal_steps
-
-        dist.init_process_group("blablub", rank=0, world_size=1)
 
         self.step = 0
         self.resume_step = 0
