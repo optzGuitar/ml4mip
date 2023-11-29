@@ -102,8 +102,8 @@ class TrainLoop:
                 y = self.__format_tensor(
                     batch['label']['data'], device=self.device).permute(1, 0, 2, 3, 4)
 
-                for slice_batch in zip(X.permute(4, 0, 1, 2, 3), y.permute(4, 0, 1, 2, 3)):
-                    self.run_step(slice_batch, y)
+                for slice_batch, slice_y in zip(X.permute(4, 0, 1, 2, 3), y.permute(4, 0, 1, 2, 3)):
+                    self.run_step(slice_batch, slice_y)
 
             self.step += 1
 
