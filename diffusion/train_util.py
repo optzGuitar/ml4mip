@@ -95,8 +95,8 @@ class TrainLoop:
         return tensor.squeeze(2).permute(1, 0, 2, 3, 4).to(th.float16).to(device)
 
     def run_loop(self, epochs=20):
-        for i in tqdm(range(epochs)):
-            for batch in self.dataloader:
+        for i in range(epochs):
+            for batch in tqdm(self.dataloader):
                 X = self.__format_tensor(th.stack(
                     [i['data'] for k, i in batch.items() if k != 'label']), device=self.device)
                 y = self.__format_tensor(
