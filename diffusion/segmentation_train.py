@@ -10,7 +10,7 @@ from diffusion.script_util import (
     add_dict_to_argparser,
 )
 from diffusion.resample import create_named_schedule_sampler
-from diffusion import dist_util, logger
+from diffusion import dist_util
 import sys
 import argparse
 sys.path.append("..")
@@ -21,9 +21,7 @@ def main():
     args = create_argparser().parse_args()
 
     dist_util.setup_dist()
-    logger.configure()
 
-    logger.log("creating model and diffusion...")
     model, diffusion = create_model_and_diffusion(
         **args_to_dict(args, model_and_diffusion_defaults().keys())
     )
@@ -31,7 +29,6 @@ def main():
     schedule_sampler = create_named_schedule_sampler(
         args.schedule_sampler, diffusion,  maxt=1000)
 
-    logger.log("creating data loader...")
     ds = BRATSDataset(args.data_dir, test_flag=False)
     datal = th.utils.data.DataLoader(
         ds,
@@ -39,7 +36,6 @@ def main():
         shuffle=True)
     data = iter(datal)
 
-    logger.log("training...")
     TrainLoop(
         model=model,
         diffusion=diffusion,
