@@ -3,9 +3,10 @@ from torch.utils.data import Dataset
 import pydicom
 from dataclasses import dataclass
 import pandas as pd
-from enums.contrast import Contrasts
+from enums.contrast import ClassificationContrasts
 import os
 from diskcache import Cache
+import torchio as tio
 
 @dataclass
 class BrainSlice:
@@ -39,36 +40,38 @@ class BrainSlice:
 
 class ClassificationDataset(Dataset):
     def __init__(self, full_augment: bool, use_cache: bool = False, cache_dir = './cache/') -> None:
-        self.path = "data/classification/"
-        targets = pd.read_csv(f"{self.path}train_labels.csv")
-        self._targets = targets.set_index("ID", inplace=True)['MGMT_value'].to_dict()
-        
+        self.basepath = "/data/classification/"
+        targets = pd.read_csv(f"{self.basepath}train_labels.csv")
+        targets["ID"] = targets["ID"].apply(lambda x: str(x).zfill(5))
+        self._targets = targets.set_index("ID",)['MGMT_value'].to_dict()
+
         self.full_augment = full_augment
-        self.candidates = os.walk(os.path.join(self.path, 'train/')).__next__()[1]
+        self.candidates = os.walk(os.path.join(self.basepath, 'train/')).__next__()[1]
         self._cache = Cache(directory=cache_dir)
         self._use_cache = use_cache
         
-    def load_candidate(self, candidate: str) -> tuple[torch.Tensor, torch.Tensor]:
-        path = os.path.join(self.path, 'train/', candidate)
+    def __len__(self) -> int:
+        return len(self.candidates)  
+    
+    def load_candidate(self, candidate: str) -> tio.Subject:
+        path = os.path.join(self.basepath, 'train/', candidate)
         
-        stacked_images = []
-        for contrast in Contrasts.values():
-            images: list[BrainSlice] = []
+        images = {}
+        for contrast in ClassificationContrasts.values():
+            image_path =  image_path = os.path.join(path, contrast)
+            images[contrast] = tio.ScalarImage(image_path)
             
-            for slice in os.walk(os.path.join(path, contrast)).__next__()[2]:
-                images.append(BrainSlice.from_file(os.path.join(path, contrast, slice)))
-                
-            images.sort()
-            stacked_images.append(torch.stack([image.brain_slice for image in images]))
-            
-        label = torch.as_tensor(self._targets[candidate])
-            
+        images['label'] = torch.as_tensor(self._targets[candidate])
+        subject = tio.Subject(**images) 
+
         if self._use_cache:
-            self._cache[candidate] = torch.stack(images), torch.as_tensor([label], dtype=torch.float)
-            
-        return torch.stack(images), torch.as_tensor([label], dtype=torch.float)
-        
-    def __getitem__(self, index: int) -> tuple[torch.Tensor, torch.Tensor]:
+            self._cache[candidate] = subject
+        return subject
+    
+    def __len__(self) -> int:
+        return len(self.candidates)
+    
+    def __getitem__(self, index: int) -> tio.Subject:
         candaidate = self.candidates[index]
         
         if self._use_cache and candaidate in self._cache:
