@@ -10,3 +10,13 @@ class Contrasts(BaseEnum):
     @classmethod
     def values(cls):
         return sorted([c.value for c in cls])
+    
+
+class ClassificationContrasts(BaseEnum):
+    flair = "FLAIR"
+    t1w = "T1w"
+    t1ce = "T1wCE"
+    t2w = "T2w"
+    @classmethod
+    def values(cls):
+        return sorted([c.value for c in cls])
