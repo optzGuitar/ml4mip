@@ -41,14 +41,14 @@ class SegmentationDataset(Dataset):
                 path, f"{candidate}_{contrast.lower()}.nii.gz")
             tensor = torch.as_tensor(
                 nib.load(image_path).get_fdata(), dtype=torch.float
-            )
+            ).unsqueeze(0)
             images[contrast] = tio.ScalarImage(tensor=tensor)
 
         tensor = torch.as_tensor(
             nib.load(os.path.join(
                 path, f"{candidate}_seg.nii.gz")
             ).get_fdata(), dtype=torch.float
-        )
+        ).unsqueeze(0)
         images['label'] = tio.LabelMap(tensor=tensor)
         images['label'] = tio.OneHot(
             num_classes=self._num_classes)(images['label'])
