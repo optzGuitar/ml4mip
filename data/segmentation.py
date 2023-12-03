@@ -1,10 +1,12 @@
 from torch.utils.data import Dataset
 import os
+import torch
 import nibabel as nib
 from enums.contrast import Contrasts
 from diskcache import Cache
 import torchio as tio
 # from monai.transforms import Compose, LoadImage,  EnsureChannelFirst, Orientation, Spacing,  NormalizeIntensity,  ScaleIntensity
+import nibabel as nib
 
 
 class SegmentationDataset(Dataset):
@@ -32,17 +34,22 @@ class SegmentationDataset(Dataset):
 
     def load_candidate(self, candidate: str) -> tio.Subject:
         path = os.path.join(self.basepath, candidate)
-        images = []
 
         images = {}
         for contrast in Contrasts.values():
             image_path = os.path.join(
                 path, f"{candidate}_{contrast.lower()}.nii.gz")
+            tensor = torch.as_tensor(
+                nib.load(image_path).get_fdata(), dtype=torch.float
+            )
+            images[contrast] = tio.ScalarImage(tensor=tensor)
 
-            images[contrast] = tio.ScalarImage(image_path)
-
-        images['label'] = tio.LabelMap(os.path.join(
-            path, f"{candidate}_seg.nii.gz"))
+        tensor = torch.as_tensor(
+            nib.load(os.path.join(
+                path, f"{candidate}_seg.nii.gz")
+            ).get_fdata(), dtype=torch.float
+        )
+        images['label'] = tio.LabelMap(tensor=tensor)
         images['label'] = tio.OneHot(
             num_classes=self._num_classes)(images['label'])
 
