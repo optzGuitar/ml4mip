@@ -1,3 +1,4 @@
+import pickle
 from torch.utils.data import Dataset
 import os
 import torch
@@ -10,29 +11,41 @@ import nibabel as nib
 
 
 class SegmentationDataset(Dataset):
-    def __init__(self, full_augment: bool, num_classes: int, cache_dir='./cache/'):
+    def __init__(self, full_augment: bool, num_classes: int, load_picked: bool = True):
         self.full_augment = full_augment
         self.basepath = "data/segmentation/train/"
         self.candidates = os.walk(self.basepath).__next__()[1]
 
-        self._cache = Cache(directory=cache_dir)
+        self.pickled_path = "group/hazel/seg_data/"
+        self._load_pickled = load_picked
+
         self._num_classes = num_classes
 
-        self.__transforms = tio.Compose([
-            tio.ZNormalization(masking_method=tio.ZNormalization.mean),
-            tio.RescaleIntensity((0, 1)),
-            tio.OneOf(
+        transformations = []
+        if not self._load_pickled:
+            transformations.extend([tio.ZNormalization(
+                masking_method=tio.ZNormalization.mean),
+                tio.RescaleIntensity((0, 1)),
+                tio.CropOrPad((224, 224, 128))
+            ])
+        if self.full_augment:
+            transformations.append(tio.OneOf(
                 {tio.RandomAffine(): 0.8,
                  tio.RandomElasticDeformation(): 0.2
                  },
-                p=0.75),
-            tio.CropOrPad((224, 224, 128)),
-        ])
+                p=0.75))
+
+        self.__transforms = tio.Compose(transformations)
 
     def __len__(self) -> int:
         return len(self.candidates)
 
-    def load_candidate(self, candidate: str) -> tio.Subject:
+    def load_candidate(self, index: int) -> tio.Subject:
+        if self._load_pickled:
+            with open(f"{self.pickled_path}{index}.pkl", "rb") as file:
+                return pickle.load(file)
+
+        candidate = self.candidates[index]
         path = os.path.join(self.basepath, candidate)
 
         images = {}
@@ -58,14 +71,9 @@ class SegmentationDataset(Dataset):
         return data
 
     def __getitem__(self, index: int) -> tio.Subject:
-        candidate = self.candidates[index]
-
-        if index in self._cache:
-            candidate = self._cache[index]
-        else:
-            candidate = self.load_candidate(candidate)
+        candidate = self.load_candidate(index)
+        if not self._load_pickled:
             candidate.load()
-            self._cache[index] = candidate
 
         transformed_candidate = self.__transforms(candidate)
         return transformed_candidate
