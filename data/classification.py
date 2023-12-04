@@ -58,18 +58,15 @@ class ClassificationDataset(Dataset):
         
         images = {}
         for contrast in ClassificationContrasts.values():
-            image_path =  image_path = os.path.join(path, contrast)
-            images[contrast] = tio.ScalarImage(image_path)
+            image_path = os.path.join(path, contrast)       # Should we order the images before creating
+            images[contrast] = tio.ScalarImage(image_path)  # the ScalarImage ???
             
-        images['label'] = torch.as_tensor(self._targets[candidate])
+        images['label'] = torch.as_tensor(self._targets[candidate]) # What does it look like ? Shouldn't we use a tuple (0,1) or (1,0) instead of 1 / 0 ???
         subject = tio.Subject(**images) 
 
         if self._use_cache:
             self._cache[candidate] = subject
         return subject
-    
-    def __len__(self) -> int:
-        return len(self.candidates)
     
     def __getitem__(self, index: int) -> tio.Subject:
         candaidate = self.candidates[index]

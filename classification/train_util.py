@@ -1,7 +1,10 @@
 import os
 import torch as th
 from tqdm import tqdm
+
+
 os.environ['CUDA_VISIBLE_DEVICES'] = "0,1"
+
 
 class TrainLoop():
     def __init__(self, model, dataloader, loss_fn, optimizer) -> None:
@@ -13,6 +16,7 @@ class TrainLoop():
     
     def __format_tensor(self, tensor: th.Tensor, device: th.device):
         return tensor.squeeze(2).permute(1, 0, 2, 3, 4).to(th.float16).to(device)
+    
     def loop(self, epochs):
         for i in range(epochs):
             size = len(self.dataloader.dataset)
