@@ -8,6 +8,5 @@ diskcache
 torchio
 wandb
 monai
-os
 tqdm
 pytorch_lightning
