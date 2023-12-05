@@ -14,7 +14,7 @@ class ResNet50(pl.LightningModule):
             weight_decay=0.001,
             max_epochs=3
         ):
-        super.__init__()
+        super().__init__()
         self.model = resnet.resnet50(
             spatial_dims=spatial_dims,
             num_classes=num_classes
@@ -33,17 +33,11 @@ class ResNet50(pl.LightningModule):
         loss = self.loss_fn(output, labels)
         return loss
     
-    def training_epoch_end(self, outputs):
-        pass
-    
     def validation_step(self, batch, batch_idx):
-        pass
-    
-    def test_step(self, batch, batch_idx):
-        pass
-    
-    def predict_step(self, batch, batch_idx):
-        pass
+        input_image, labels = batch      # !!!
+        output = self.forward(input_image)
+        loss = self.loss_fn(output, labels)
+        return loss
     
     def configure_optimizers(self):
         optimizer = AdamW(
