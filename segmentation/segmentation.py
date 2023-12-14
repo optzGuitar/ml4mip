@@ -54,14 +54,15 @@ class SegmentationModule(pl.LightningModule):
         for loss, _ in self._handle_patch_batch(image_patches, segmentation_patches, previous_segmentation_hat_p):
             self.manual_backward(loss)
 
-        self.clip_gradients(
-            optimizer,
-            gradient_clip_val=self.config.loss_config.gradient_clip,
-            gradient_clip_algorithm="norm"
-        )
-        optimizer.step()
-        optimizer.zero_grad()
-        lr_scheduler.step()
+        if batch_idx % self.config.train_config.gradient_accumulation_steps == 0:
+            self.clip_gradients(
+                optimizer,
+                gradient_clip_val=self.config.loss_config.gradient_clip,
+                gradient_clip_algorithm="norm"
+            )
+            optimizer.step()
+            optimizer.zero_grad()
+            lr_scheduler.step()
 
     def validation_step(self, batch: torch.Tensor, batch_idx: int) -> STEP_OUTPUT:
         images, segmentation = self._get_from_batch(batch)
@@ -145,6 +146,9 @@ class SegmentationModule(pl.LightningModule):
             self.log(f"{prefix}/loss", loss.detach().cpu().item())
             yield loss, segmentation_hat
 
+    def _xai_loss(self, y_hat: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+        return self.loss(y_hat, y, is_train=False)
+
     def _get_from_batch(self, batch: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
         images = torch.concat(
             [i['data'] for k, i in batch.items() if k != 'label'], dim=1)
@@ -155,10 +159,10 @@ class SegmentationModule(pl.LightningModule):
     def _get_patches(self, batch: torch.Tensor) -> Any:
         shape = batch.shape
         b_patch, c_patch, d_patch, h_patch, w_patch = patch_size = (
-            shape[0], shape[1], *self.config.data_config.patch_size
+            shape[0], *self.config.data_config.patch_size
         )
         b_stride, c_stride, d_stride, h_stride, w_stride = (
-            shape[0], shape[1], *self.config.data_config.strides
+            shape[0], *self.config.data_config.strides
         )
 
         unfolded = batch.unfold(2, d_patch, d_stride).unfold(3, h_patch, h_stride).unfold(
