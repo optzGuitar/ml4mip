@@ -93,6 +93,7 @@ class GenSurfLoss(nn.Module):
 
 class CustomLoss(nn.Module):
     def __init__(self, ce_weight: float = 1, tversky_weight: float = 1, gsl_weight: float = 1, logger: WandbLogger = None) -> None:
+        super().__init__()
         self.ce_weight = ce_weight
         self.tversky_weight = tversky_weight
         self.gsl_weight = gsl_weight
