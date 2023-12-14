@@ -56,3 +56,4 @@ class SegmentationConfig:
     data_config: DataConfig = field(default_factory=DataConfig)
     model_config: ModelConfig = field(default_factory=ModelConfig)
     loss_config: LossConfig = field(default_factory=LossConfig)
+    train_config: TrainConfig = field(default_factory=TrainConfig)
