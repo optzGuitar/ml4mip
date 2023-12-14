@@ -10,6 +10,7 @@ import torch.nn as nn
 from segmentation.loss import CustomLoss
 from torchmetrics.classification import MulticlassF1Score
 from monai.metrics import compute_hausdorff_distance
+from torch.autograd import grad
 
 
 class SegmentationModule(pl.LightningModule):
@@ -146,8 +147,12 @@ class SegmentationModule(pl.LightningModule):
             self.log(f"{prefix}/loss", loss.detach().cpu().item())
             yield loss, segmentation_hat
 
-    def _xai_loss(self, y_hat: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
-        return self.loss(y_hat, y, is_train=False)
+    def _xai_loss(self, y_hat: torch.Tensor, y: torch.Tensor, input: torch.Tensor) -> torch.Tensor:
+        cloned_hat = y_hat.clone()
+        gradient = grad(cloned_hat, input)
+
+        loss = self.overlap_loss(gradient, y)
+        return loss
 
     def _get_from_batch(self, batch: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
         images = torch.concat(
@@ -165,8 +170,8 @@ class SegmentationModule(pl.LightningModule):
             shape[0], *self.config.data_config.strides
         )
 
-        unfolded = batch.unfold(2, d_patch, d_stride).unfold(3, h_patch, h_stride).unfold(
-            4, w_patch, w_stride).unfold(1, c_patch, c_stride).unfold(0, b_patch, b_stride)
+        unfolded = batch.unfold(2, d_patch.item(), d_stride.item()).unfold(3, h_patch.item(), h_stride.item()).unfold(
+            4, w_patch.item(), w_stride.item()).unfold(1, c_patch.item(), c_stride.item()).unfold(0, b_patch.item(), b_stride.item())
 
         unfolded = unfolded.permute(
             0, 1, 9, 2, 3, 4, 5, 6, 7, 8).contiguous().view(-1, *patch_size)
