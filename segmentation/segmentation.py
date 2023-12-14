@@ -14,6 +14,7 @@ from monai.metrics import compute_hausdorff_distance
 
 class SegmentationModule(pl.LightningModule):
     def __init__(self, segmentation_config: SegmentationConfig):
+        super().__init__()
         self.model = nets.attentionunet.AttentionUnet(
             spatial_dims=segmentation_config.data_config.n_dims,
             in_channels=segmentation_config.data_config.n_channels,
