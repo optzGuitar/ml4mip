@@ -4,6 +4,8 @@ import torch
 import torchgeometry as tgm
 from pytorch_lightning.loggers import WandbLogger
 
+from segmentation.config import SegmentationConfig
+
 
 class DiceLoss(nn.Module):
     def __init__(self):
@@ -92,13 +94,14 @@ class GenSurfLoss(nn.Module):
 
 
 class CustomLoss(nn.Module):
-    def __init__(self, ce_weight: float = 1, tversky_weight: float = 1, gsl_weight: float = 1, logger: WandbLogger = None) -> None:
+    def __init__(self, config: SegmentationConfig, ce_weight: float = 1, tversky_weight: float = 1, gsl_weight: float = 1, logger: WandbLogger = None) -> None:
         super().__init__()
         self.ce_weight = ce_weight
         self.tversky_weight = tversky_weight
         self.gsl_weight = gsl_weight
         self.ce = nn.CrossEntropyLoss()
-        self.tversky_loss = tgm.losses.TverskyLoss()
+        self.tversky_loss = tgm.losses.TverskyLoss(
+            config.loss_config.tversky_alpha, config.loss_config.tversky_beta)
         self.gsl_loss = GenSurfLoss()
         self.logger = logger
 

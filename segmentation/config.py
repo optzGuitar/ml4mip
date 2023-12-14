@@ -32,6 +32,9 @@ class LossConfig:
     gen_surf_weight: float = 1.0
     patch_loss_weight: float = 0.2
 
+    tversky_alpha: float = 0.3
+    tversky_beta: float = 0.7
+
     cosine_period: int = 10000
     min_lr: float = 1e-6
     gradient_clip: float = 2.0
