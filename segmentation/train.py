@@ -4,6 +4,7 @@ from segmentation.config import SegmentationConfig
 from segmentation.segmentation import SegmentationModule
 from data.segmentation import SegmentationDataset
 import torch
+from pytorch_lightning.loggers import WandbLogger
 
 
 def train(config: SegmentationConfig):
@@ -12,6 +13,7 @@ def train(config: SegmentationConfig):
         default_root_dir=config.root_dir,
         max_epochs=config.train_config.epochs,
         enable_checkpointing=True,
+        logger=WandbLogger(project="ml4mip")
     )
     model = SegmentationModule(config)
     dataset = SegmentationDataset(True, config.data_config.n_classes)
