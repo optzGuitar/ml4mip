@@ -47,7 +47,7 @@ class DiceCELoss(nn.Module):
 
 
 class GenSurfLoss(nn.Module):
-    def __init__(self, class_weights):
+    def __init__(self, class_weights=None):
         super(GenSurfLoss, self).__init__()
         self.region_loss = DiceCELoss()
 
