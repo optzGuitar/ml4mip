@@ -8,35 +8,6 @@ import os
 from diskcache import Cache
 import torchio as tio
 
-@dataclass
-class BrainSlice:
-    brain_slice: torch.Tensor
-    id: int
-    
-    @classmethod
-    def from_file(cls, path: str):
-        return cls(
-            brain_slice=torch.as_tensor(
-                pydicom.dcmread(path).pixel_array
-            ),
-            id=int(path.split("/")[-1].split(".")[0].split("-")[-1])
-        )
-    
-    def __lt__(self, other):
-        if isinstance(other, BrainSlice):
-            return self.id < other.id
-        super().__lt__(other)
-        
-    def __gt__(self, other):
-        if isinstance(other, BrainSlice):
-            return self.id > other.id
-        super().__gt__(other)
-        
-    def __eq__(self, other) -> bool:
-        if isinstance(other, BrainSlice):
-            return self.id == other.id
-        super().__eq__(other)
-
 
 class ClassificationDataset(Dataset):
     def __init__(self, full_augment: bool, use_cache: bool = False, cache_dir = './cache/') -> None:
