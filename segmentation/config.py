@@ -9,11 +9,11 @@ class DataConfig:
     n_classes: int = 4
 
     image_size: tuple = field(
-        default_factory=lambda: torch.Tensor((4, 224, 224, 128), dtype=torch.int))
+        default_factory=lambda: torch.Tensor((4, 224, 224, 128)).to(torch.int))
     patch_size: tuple = field(
-        default_factory=lambda: torch.Tensor((4, 224 // 4, 224 // 4, 128 // 4), dtype=torch.int))
+        default_factory=lambda: torch.Tensor((4, 224 // 4, 224 // 4, 128 // 4)).to(torch.int))
     strides: tuple = field(default_factory=lambda: torch.Tensor(
-        (4, 224 // 8, 224 // 8, 128 // 8), dtype=torch.int)
+        (4, 224 // 8, 224 // 8, 128 // 8)).to(torch.int)
     )
 
 
