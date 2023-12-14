@@ -26,6 +26,7 @@ def train(config: SegmentationConfig):
         val_dataset, batch_size=config.train_config.batch_size, num_workers=config.train_config.num_workers
     )
 
-    trainer.fit(model, train_dataloader=train_dataloader,
+    trainer.fit(model,
+                train_dataloaders=train_dataloader,
                 val_dataloaders=val_dataloader
                 )
