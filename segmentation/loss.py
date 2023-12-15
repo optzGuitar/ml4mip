@@ -98,6 +98,7 @@ class CustomLoss(nn.Module):
             mode="multiclass",
             alpha=config.loss_config.tversky_alpha, beta=config.loss_config.tversky_beta)
         self.gsl_loss = GenSurfLoss()
+        self.mse = nn.MSELoss()
         self.config = config
 
     def forward(self, y_hat: torch.Tensor, y: torch.Tensor, is_train: bool = True, log_fn=None) -> torch.Tensor:
@@ -107,10 +108,12 @@ class CustomLoss(nn.Module):
             y_hat, y_index)
         gsl_loss = self.gsl_loss(
             y_hat, y, dtm=self.config.loss_config.dtm, alpha=self.config.loss_config.alpha)
+        mse = self.mse(y_hat, y)
         combined = (
             self.ce_weight * ce_loss +
             self.tversky_weight * tversky_loss +
-            self.gsl_weight * gsl_loss
+            self.gsl_weight * gsl_loss +
+            mse
         )
 
         if log_fn is not None:
@@ -123,5 +126,7 @@ class CustomLoss(nn.Module):
                 f"{prefix}/gsl_loss", gsl_loss.detach().cpu().mean().item())
             log_fn(
                 f"{prefix}/custom_loss", combined.detach().cpu().mean().item())
+            log_fn(
+                f"{prefix}/mse", mse.detach().cpu().mean().item())
 
         return combined.mean()
