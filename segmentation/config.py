@@ -1,8 +1,9 @@
 from dataclasses import dataclass, field
 import torch
 
-IMAGE_WITH = 256
-IMAGE_HEIGHT = 256
+IMAGE_WITH = 224
+IMAGE_HEIGHT = 224
+IMAGE_DEPTH = 128
 
 
 @dataclass
@@ -12,11 +13,11 @@ class DataConfig:
     n_classes: int = 4
 
     image_size: tuple = field(
-        default_factory=lambda: torch.Tensor((4, IMAGE_HEIGHT, IMAGE_WITH, 128)).to(torch.int))
+        default_factory=lambda: torch.Tensor((4, IMAGE_HEIGHT, IMAGE_WITH, IMAGE_DEPTH)).to(torch.int))
     patch_size: tuple = field(
-        default_factory=lambda: torch.Tensor((4, IMAGE_HEIGHT // 4, IMAGE_WITH // 4, 128 // 4)).to(torch.int))
+        default_factory=lambda: torch.Tensor((4, IMAGE_HEIGHT // 4, IMAGE_WITH // 4, IMAGE_DEPTH // 4)).to(torch.int))
     patch_strides: tuple = field(default_factory=lambda: torch.Tensor(
-        (4, IMAGE_HEIGHT // 8, IMAGE_WITH // 8, 128 // 8)).to(torch.int)
+        (4, IMAGE_HEIGHT // 8, IMAGE_WITH // 8, IMAGE_DEPTH // 8)).to(torch.int)
     )
 
 
