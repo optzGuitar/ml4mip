@@ -63,13 +63,7 @@ class SegmentationDataset(Dataset):
             ).get_fdata(), dtype=torch.float
         ).unsqueeze(0)
         tensor[tensor == 3] = 0
-        labels = torch.stack((
-            (tensor == 0),
-            (tensor == 1),
-            (tensor == 2),
-            (tensor == 4),
-        ))
-        images['label'] = tio.LabelMap(tensor=labels)
+        images['label'] = tio.LabelMap(tensor=tensor)
         images['label'] = tio.OneHot(
             num_classes=self.config.data_config.n_classes)(images['label'])
 
