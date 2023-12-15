@@ -12,12 +12,13 @@ from torchmetrics.classification import MulticlassF1Score
 from monai.metrics import compute_hausdorff_distance
 from torch.autograd import grad
 import torch.nn.functional as F
+import torch.nn as nn
 
 
 class SegmentationModule(pl.LightningModule):
     def __init__(self, segmentation_config: SegmentationConfig):
         super().__init__()
-        self.model = nets.SegResNet(
+        self.model = nn.Sequential(nets.SegResNet(
             spatial_dims=segmentation_config.data_config.n_dims,
             in_channels=segmentation_config.data_config.n_channels,
             out_channels=segmentation_config.data_config.n_classes,
@@ -29,6 +30,8 @@ class SegmentationModule(pl.LightningModule):
             # up_kernel_size=list(
             #     reversed(segmentation_config.model_config.kernels)),
             dropout_prob=segmentation_config.model_config.dropout,
+        ),
+            nn.Softmax(dim=1)
         )
 
         self.loss = CustomLoss(
