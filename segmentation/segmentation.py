@@ -85,7 +85,7 @@ class SegmentationModule(pl.LightningModule):
                               ] = segmentaiton_hat
 
         dice = MulticlassF1Score(
-            average=None, num_classes=self.config.data_config.n_classes - 1).to(self.device)
+            average=None, num_classes=self.config.data_config.n_classes).to(self.device)
 
         segmentations_hat_max = torch.argmax(segmentations_hat, dim=1)
         segmentation_max = torch.argmax(segmentation, dim=1)
