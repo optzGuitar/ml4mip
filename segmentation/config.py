@@ -8,6 +8,7 @@ IMAGE_DEPTH = 128
 
 @dataclass
 class DataConfig:
+    load_pickle: bool = True
     n_dims: int = 3
     n_channels: int = 4
     n_classes: int = 4
