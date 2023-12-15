@@ -91,7 +91,7 @@ class SegmentationModule(pl.LightningModule):
         segmentation_max = torch.argmax(segmentation, dim=1)
         for i, name in enumerate(['necrotic', 'edematous', 'enahncing']):
             dice_score = dice(
-                segmentations_hat_max[i].flatten(1), segmentation_max[i].flatten(1))
+                (segmentations_hat_max == i + 1).flatten(1), (segmentation_max == i+1).flatten(1))
 
             self.log(f"val/dice_{name}", dice_score.mean().item())
 
