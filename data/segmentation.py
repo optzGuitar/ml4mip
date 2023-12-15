@@ -63,6 +63,7 @@ class SegmentationDataset(Dataset):
             ).get_fdata(), dtype=torch.float
         ).unsqueeze(0)
         tensor[tensor == 3] = 0
+        tensor[tensor == 4] = 3
         images['label'] = tio.LabelMap(tensor=tensor)
         images['label'] = tio.OneHot(
             num_classes=self.config.data_config.n_classes)(images['label'])
