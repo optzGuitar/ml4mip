@@ -104,7 +104,7 @@ class SegmentationModule(pl.LightningModule):
 
         return (dice_score.mean() + tumor_score.mean() + whole_tumor.mean()).mean()
 
-    def flatten_index_to_coordinates(index, patch_shape, patch_stride, image_shape):
+    def flatten_index_to_coordinates(self, index, patch_shape, patch_stride, image_shape):
         # Unpack shapes
         patch_depth, patch_height, patch_width, _ = patch_shape
         stride_depth, stride_height, stride_width = patch_stride
