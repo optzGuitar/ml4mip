@@ -1,7 +1,7 @@
 import torch.nn as nn
 import torch.nn.functional as F
 import torch
-import torchgeometry as tgm
+import segmentation_models_pytorch as smp
 from pytorch_lightning.loggers import WandbLogger
 
 from segmentation.config import SegmentationConfig
@@ -100,8 +100,9 @@ class CustomLoss(nn.Module):
         self.tversky_weight = tversky_weight
         self.gsl_weight = gsl_weight
         self.ce = nn.CrossEntropyLoss()
-        self.tversky_loss = tgm.losses.TverskyLoss(
-            config.loss_config.tversky_alpha, config.loss_config.tversky_beta)
+        self.tversky_loss = smp.losses.TverskyLoss(
+            mode="multiclass",
+            alpha=config.loss_config.tversky_alpha, beta=config.loss_config.tversky_beta)
         self.gsl_loss = GenSurfLoss()
         self.logger = logger
 

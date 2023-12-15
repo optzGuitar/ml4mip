@@ -4,9 +4,9 @@ numpy
 pandas
 torch
 torchvision
-diskcache
 torchio
 wandb
 monai
 tqdm
 pytorch_lightning
+segmentation-models-pytorch
