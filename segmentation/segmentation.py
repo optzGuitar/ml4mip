@@ -171,7 +171,7 @@ class SegmentationModule(pl.LightningModule):
         )
 
         unfolded = batch.unfold(2, d_patch.item(), d_stride.item()).unfold(3, h_patch.item(), h_stride.item()).unfold(
-            4, w_patch.item(), w_stride.item()).unfold(1, c_patch.item(), c_stride.item()).unfold(0, b_patch.item(), b_stride.item())
+            4, w_patch.item(), w_stride.item()).unfold(1, c_patch.item(), c_stride.item()).unfold(0, b_patch, b_stride)
 
         unfolded = unfolded.permute(
             0, 1, 9, 2, 3, 4, 5, 6, 7, 8).contiguous().view(-1, *patch_size)
