@@ -17,7 +17,7 @@ class SegmentationModule(pl.LightningModule):
     def __init__(self, segmentation_config: SegmentationConfig):
         super().__init__()
         self.model = nets.UNet(
-            # spatial_dims=segmentation_config.data_config.n_dims,
+            spatial_dims=segmentation_config.data_config.n_dims,
             in_channels=segmentation_config.data_config.n_channels,
             out_channels=segmentation_config.data_config.n_classes,
             # img_size=segmentation_config.data_config.image_size[1:],
