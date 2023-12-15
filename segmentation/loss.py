@@ -88,7 +88,7 @@ class GenSurfLoss(nn.Module):
 
 
 class CustomLoss(nn.Module):
-    def __init__(self, config: SegmentationConfig, ce_weight: float = 1, tversky_weight: float = 1, gsl_weight: float = 1, logger: WandbLogger = None) -> None:
+    def __init__(self, config: SegmentationConfig, ce_weight: float = 1, tversky_weight: float = 1, gsl_weight: float = 1) -> None:
         super().__init__()
         self.ce_weight = ce_weight
         self.tversky_weight = tversky_weight
@@ -98,10 +98,9 @@ class CustomLoss(nn.Module):
             mode="multiclass",
             alpha=config.loss_config.tversky_alpha, beta=config.loss_config.tversky_beta)
         self.gsl_loss = GenSurfLoss()
-        self.logger = logger
         self.config = config
 
-    def forward(self, y_hat: torch.Tensor, y: torch.Tensor, is_train: bool = True) -> torch.Tensor:
+    def forward(self, y_hat: torch.Tensor, y: torch.Tensor, is_train: bool = True, log_fn=None) -> torch.Tensor:
         y_index = torch.argmax(y, dim=1)
         ce_loss = self.ce(y_hat, y)
         tversky_loss = self.tversky_loss(
@@ -114,9 +113,9 @@ class CustomLoss(nn.Module):
             self.gsl_weight * gsl_loss
         )
 
-        if self.logger is not None:
+        if log_fn is not None:
             prefix = "train" if is_train else "val"
-            self.logger.log_metrics({
+            log_fn({
                 f"{prefix}/ce_loss": ce_loss,
                 f"{prefix}/tversky_loss": tversky_loss,
                 f"{prefix}/gsl_loss": gsl_loss,

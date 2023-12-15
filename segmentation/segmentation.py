@@ -36,7 +36,6 @@ class SegmentationModule(pl.LightningModule):
             ce_weight=segmentation_config.loss_config.ce_weight,
             tversky_weight=segmentation_config.loss_config.tversky_loss,
             gsl_weight=segmentation_config.loss_config.gen_surf_weight,
-            logger=self.logger,
         )
         self.overlap_loss = nn.MSELoss()
 
@@ -148,7 +147,7 @@ class SegmentationModule(pl.LightningModule):
             segmentation_hat = self.model(image_patch)
 
             loss = self.loss(segmentation_hat,
-                             segmentation_patch, is_train=is_train)
+                             segmentation_patch, is_train=is_train, log_fn=self.log)
 
             # if previous_seg_hat_p[0] is not None:
             #     loss += (self.config.loss_config.patch_loss_weight *
