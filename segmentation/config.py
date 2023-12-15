@@ -43,6 +43,9 @@ class LossConfig:
     min_lr: float = 1e-6
     gradient_clip: float = 2.0
 
+    dtm: float = 0.1
+    alpha: float = 0.5
+
 
 @dataclass
 class ModelConfig:

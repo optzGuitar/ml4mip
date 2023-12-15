@@ -105,13 +105,15 @@ class CustomLoss(nn.Module):
             alpha=config.loss_config.tversky_alpha, beta=config.loss_config.tversky_beta)
         self.gsl_loss = GenSurfLoss()
         self.logger = logger
+        self.config = config
 
     def forward(self, y_hat: torch.Tensor, y: torch.Tensor, is_train: bool = True) -> torch.Tensor:
         shape = y.shape
         ce_loss = self.ce(y_hat, y)
         tversky_loss = self.tversky_loss(
             y_hat, torch.argmax(y, dim=1))
-        gsl_loss = self.gsl_loss(y_hat, y)
+        gsl_loss = self.gsl_loss(
+            y_hat, y, dtm=self.config.loss_config.dtm, alpha=self.config.loss_config.alpha)
         combined = (
             self.ce_weight * ce_loss +
             self.tversky_weight * tversky_loss +
