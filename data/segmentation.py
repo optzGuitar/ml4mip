@@ -62,6 +62,7 @@ class SegmentationDataset(Dataset):
                 path, f"{candidate}_seg.nii.gz")
             ).get_fdata(), dtype=torch.float
         ).unsqueeze(0)
+        tensor[tensor == 3] = 0
         labels = torch.stack((
             (tensor == 0)
             (tensor == 1)
