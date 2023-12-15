@@ -107,9 +107,9 @@ class SegmentationModule(pl.LightningModule):
 
     def flatten_index_to_coordinates(self, index, patch_shape, patch_stride, image_shape):
         # Unpack shapes
-        patch_depth, patch_height, patch_width, _ = patch_shape
+        patch_depth, patch_height, patch_width = patch_shape
         stride_depth, stride_height, stride_width = patch_stride
-        image_depth, image_height, image_width, _ = image_shape
+        image_depth, image_height, image_width = image_shape
 
         patches_per_row = (image_width - patch_width) // stride_width + 1
         patches_per_slice = patches_per_row * \
