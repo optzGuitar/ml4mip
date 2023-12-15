@@ -108,8 +108,8 @@ class CustomLoss(nn.Module):
     def forward(self, y_hat: torch.Tensor, y: torch.Tensor, is_train: bool = True) -> torch.Tensor:
         shape = y.shape
         ce_loss = self.ce(y_hat, y)
-        tversky_loss = self.tversky_loss(y_hat.view(
-            shape[0], -1, shape[2], shape[3]), y.view(shape[0], -1, shape[2], shape[3]))
+        tversky_loss = self.tversky_loss(
+            y_hat.flatten(), y.flatten()).view(shape)
         gsl_loss = self.gsl_loss(y_hat, y)
         combined = (
             self.ce_weight * ce_loss +
