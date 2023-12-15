@@ -110,7 +110,7 @@ class CustomLoss(nn.Module):
         shape = y.shape
         ce_loss = self.ce(y_hat, y)
         tversky_loss = self.tversky_loss(
-            torch.argmax(y_hat, dim=1), torch.argmax(y, dim=1)).view(shape)
+            torch.argmax(y_hat, dim=1).to(torch.float), torch.argmax(y, dim=1).to(torch.float)).view(shape)
         gsl_loss = self.gsl_loss(y_hat, y)
         combined = (
             self.ce_weight * ce_loss +
