@@ -11,6 +11,7 @@ from segmentation.loss import CustomLoss
 from torchmetrics.classification import MulticlassF1Score
 from monai.metrics import compute_hausdorff_distance
 from torch.autograd import grad
+import torch.nn.functional as F
 
 
 class SegmentationModule(pl.LightningModule):
@@ -91,17 +92,24 @@ class SegmentationModule(pl.LightningModule):
         segmentation_max = torch.argmax(segmentation, dim=1)
         for i, name in enumerate(['necrotic', 'edematous', 'enahncing']):
             dice_score = dice(
-                (segmentations_hat_max == i + 1).flatten(1), (segmentation_max == i+1).flatten(1))
+                (segmentations_hat_max == i + 1),
+                (segmentation_max == i+1)
+            )
 
             self.log(f"val/dice_{name}", dice_score.mean().item())
 
         tumor_score = compute_hausdorff_distance(
-            segmentations_hat[:, [1, 4]], segmentation[:,
-                                                       :, [1, 4], :, :], include_background=True
+            F.one_hot(segmentations_hat_max,
+                      num_classes=self.config.data_config.n_classes)[:, [1, 3]],
+            F.one_hot(segmentation_max, num_classes=self.config.data_config.n_classes)[
+                :, [1, 4]],
+            include_background=True,
         )
         whole_tumor = compute_hausdorff_distance(
-            segmentations_hat[:, [1, 2, 4]], segmentation[:,
-                                                          :, [1, 2, 4]], include_background=True
+            F.one_hot(segmentations_hat_max,
+                      num_classes=self.config.data_config.n_classes)[:, [1, 2, 3]],
+            F.one_hot(segmentation_max, num_classes=self.config.data_config.n_classes)[
+                :, [1, 2, 4]],
         )
 
         self.log("val/tumor_score", tumor_score.mean().item())
