@@ -86,8 +86,13 @@ class SegmentationModule(pl.LightningModule):
 
         dice = MulticlassF1Score(
             average=None, num_classes=self.config.data_config.n_classes - 1).to(self.device)
-        dice_score = dice(
-            segmentations_hat[:, 1:], segmentation[:, 1:])
+
+        for i, name in enumerate(['necrotic', 'edematous', 'enahncing']):
+            dice_score = dice(
+                segmentations_hat[:, i+1].flatten(1), segmentation[:, i+1].flatten(1))
+
+            self.log(f"val/dice_{name}", dice_score.mean().item())
+
         tumor_score = compute_hausdorff_distance(
             segmentations_hat[:, [1, 4]], segmentation[:,
                                                        :, [1, 4], :, :], include_background=True
@@ -96,9 +101,6 @@ class SegmentationModule(pl.LightningModule):
             segmentations_hat[:, [1, 2, 4]], segmentation[:,
                                                           :, [1, 2, 4]], include_background=True
         )
-
-        for i in ['necrotic', 'edematous', 'enahncing']:
-            self.log(f"val/dice_{i}", dice_score[i].mean().item())
 
         self.log("val/tumor_score", tumor_score.mean().item())
         self.log("val/whole_tumor", whole_tumor.mean().item())
