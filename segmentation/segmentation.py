@@ -19,7 +19,7 @@ class SegmentationModule(pl.LightningModule):
         self.model = nets.UNETR(
             # spatial_dims=segmentation_config.data_config.n_dims,
             in_channels=segmentation_config.data_config.n_channels,
-            out_channels=segmentation_config.data_config.n_channels,
+            out_channels=segmentation_config.data_config.n_classes,
             img_size=segmentation_config.data_config.image_size[1:],
             # channels=segmentation_config.model_config.channels,
             # strides=segmentation_config.model_config.strides,
