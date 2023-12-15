@@ -102,7 +102,6 @@ class CustomLoss(nn.Module):
         self.ce = nn.CrossEntropyLoss()
         self.tversky_loss = smp.losses.TverskyLoss(
             mode="multiclass",
-            from_logits=False,
             alpha=config.loss_config.tversky_alpha, beta=config.loss_config.tversky_beta)
         self.gsl_loss = GenSurfLoss()
         self.logger = logger
@@ -111,7 +110,7 @@ class CustomLoss(nn.Module):
         shape = y.shape
         ce_loss = self.ce(y_hat, y)
         tversky_loss = self.tversky_loss(
-            torch.argmax(y_hat, dim=1), y).view(shape)
+            y_hat, torch.argmax(y, dim=1))
         gsl_loss = self.gsl_loss(y_hat, y)
         combined = (
             self.ce_weight * ce_loss +
