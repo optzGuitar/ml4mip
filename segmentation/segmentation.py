@@ -16,16 +16,17 @@ from torch.autograd import grad
 class SegmentationModule(pl.LightningModule):
     def __init__(self, segmentation_config: SegmentationConfig):
         super().__init__()
-        self.model = nets.basic_unetplusplus.BasicUNetPlusPlus(
-            spatial_dims=segmentation_config.data_config.n_dims,
+        self.model = nets.UNETR(
+            # spatial_dims=segmentation_config.data_config.n_dims,
             in_channels=segmentation_config.data_config.n_channels,
             out_channels=segmentation_config.data_config.n_channels,
+            image_size=segmentation_config.data_config.image_size[1:],
             # channels=segmentation_config.model_config.channels,
             # strides=segmentation_config.model_config.strides,
             # kernel_size=segmentation_config.model_config.kernels,
             # up_kernel_size=list(
             #     reversed(segmentation_config.model_config.kernels)),
-            dropout=segmentation_config.model_config.dropout,
+            dropout_rate=segmentation_config.model_config.dropout,
         )
 
         self.loss = CustomLoss(
@@ -130,8 +131,8 @@ class SegmentationModule(pl.LightningModule):
     def _handle_patch_batch(self, images: torch.Tensor, segmentation: torch.Tensor, previous_seg_hat_p: list[Optional[torch.Tensor]], is_train: bool = True) -> tuple[torch.Tensor, torch.Tensor]:
         prefix = "train" if is_train else "val"
         for image_patch, segmentation_patch in zip(images, segmentation):
-            print(image_patch.shape, segmentation_patch.shape)
             segmentation_hat = self.model(image_patch)
+
             loss = self.loss(segmentation_hat,
                              segmentation_patch, is_train=is_train)
 
