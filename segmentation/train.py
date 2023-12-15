@@ -13,7 +13,8 @@ def train(config: SegmentationConfig):
         default_root_dir=config.root_dir,
         max_epochs=config.train_config.epochs,
         enable_checkpointing=True,
-        logger=WandbLogger(project="ml4mip")
+        logger=WandbLogger(project="ml4mip"),
+        log_every_n_steps=1,
     )
     model = SegmentationModule(config)
     dataset = SegmentationDataset(
