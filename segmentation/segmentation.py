@@ -20,7 +20,7 @@ class SegmentationModule(pl.LightningModule):
             # spatial_dims=segmentation_config.data_config.n_dims,
             in_channels=segmentation_config.data_config.n_channels,
             out_channels=segmentation_config.data_config.n_channels,
-            img_size=segmentation_config.data_config.image_size[1:],
+            img_size=segmentation_config.data_config.image_size,
             # channels=segmentation_config.model_config.channels,
             # strides=segmentation_config.model_config.strides,
             # kernel_size=segmentation_config.model_config.kernels,
