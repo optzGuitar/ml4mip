@@ -12,15 +12,13 @@ from segmentation.config import SegmentationConfig
 
 
 class SegmentationDataset(Dataset):
-    def __init__(self, config: SegmentationConfig, full_augment: bool, num_classes: int, load_picked: bool = True):
+    def __init__(self, config: SegmentationConfig, full_augment: bool, load_picked: bool = True):
         self.full_augment = full_augment
         self.basepath = "data/segmentation/train/"
         self.candidates = os.walk(self.basepath).__next__()[1]
 
         self.pickled_path = "group/hazel/seg_data/"
         self._load_pickled = load_picked
-
-        self._num_classes = num_classes
 
         transformations = []
         if not self._load_pickled:
@@ -37,6 +35,7 @@ class SegmentationDataset(Dataset):
                 p=0.75))
 
         self.__transforms = tio.Compose(transformations)
+        self.config = config
 
     def __len__(self) -> int:
         return len(self.candidates)
@@ -71,7 +70,7 @@ class SegmentationDataset(Dataset):
         ))
         images['label'] = tio.LabelMap(tensor=labels)
         images['label'] = tio.OneHot(
-            num_classes=self._num_classes)(images['label'])
+            num_classes=self.config.data_config.n_classes)(images['label'])
 
         data = tio.Subject(**images)
 
