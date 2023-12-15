@@ -115,11 +115,13 @@ class CustomLoss(nn.Module):
 
         if log_fn is not None:
             prefix = "train" if is_train else "val"
-            log_fn({
-                f"{prefix}/ce_loss": ce_loss,
-                f"{prefix}/tversky_loss": tversky_loss,
-                f"{prefix}/gsl_loss": gsl_loss,
-                f"{prefix}/custom_loss": combined
-            })
+            log_fn(
+                f"{prefix}/ce_loss", ce_loss.detach().cpu().mean().item())
+            log_fn(
+                f"{prefix}/tversky_loss", tversky_loss.detach().cpu().mean().item())
+            log_fn(
+                f"{prefix}/gsl_loss", gsl_loss.detach().cpu().mean().item())
+            log_fn(
+                f"{prefix}/custom_loss", combined.detach().cpu().mean().item())
 
         return combined.mean()
