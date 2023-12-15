@@ -25,7 +25,7 @@ class SegmentationDataset(Dataset):
             transformations.extend([tio.ZNormalization(
                 masking_method=tio.ZNormalization.mean),
                 tio.RescaleIntensity((0, 1)),
-                tio.CropOrPad(config.data_config.image_size),
+                tio.CropOrPad(config.data_config.image_size[1:]),
             ])
         if self.full_augment:
             transformations.append(tio.OneOf(
