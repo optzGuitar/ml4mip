@@ -77,7 +77,8 @@ class SegmentationModule(pl.LightningModule):
         for i, (loss, segmentaiton_hat) in enumerate(self._handle_patch_batch(image_patches, segmentation_patches, previous_seg_hat_p, is_train=False)):
             # TODO: add image logging!
             start_z, start_y, start_x, end_z, end_y, end_x = self.flatten_index_to_coordinates(
-                i, self.config.data_config.patch_size, self.config.data_config.patch_strides, self.config.data_config.image_size
+                i, self.config.data_config.patch_size[1:], self.config.data_config.patch_strides[
+                    1:], self.config.data_config.image_size[1:]
             )
             segmentations_hat[:, :, start_z:end_z,
                               start_y:end_y, start_x:end_x
