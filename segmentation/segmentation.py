@@ -16,18 +16,18 @@ from torch.autograd import grad
 class SegmentationModule(pl.LightningModule):
     def __init__(self, segmentation_config: SegmentationConfig):
         super().__init__()
-        self.model = nets.UNet(
+        self.model = nets.SegResNet(
             spatial_dims=segmentation_config.data_config.n_dims,
             in_channels=segmentation_config.data_config.n_channels,
             out_channels=segmentation_config.data_config.n_classes,
             # img_size=segmentation_config.data_config.image_size[1:],
-            channels=segmentation_config.model_config.channels,
-            strides=segmentation_config.model_config.strides,
-            num_res_units=2,
+            # channels=segmentation_config.model_config.channels,
+            # strides=segmentation_config.model_config.strides,
+            # num_res_units=2,
             # kernel_size=segmentation_config.model_config.kernels,
             # up_kernel_size=list(
             #     reversed(segmentation_config.model_config.kernels)),
-            dropout=segmentation_config.model_config.dropout,
+            dropout_prob=segmentation_config.model_config.dropout,
         )
 
         self.loss = CustomLoss(
