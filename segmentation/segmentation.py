@@ -74,6 +74,7 @@ class SegmentationModule(pl.LightningModule):
 
         previous_seg_hat_p = [None]
         segmentations_hat = torch.zeros_like(segmentation)
+        print(segmentation.shape)
         for i, (loss, segmentaiton_hat) in enumerate(self._handle_patch_batch(image_patches, segmentation_patches, previous_seg_hat_p, is_train=False)):
             # TODO: add image logging!
             start_z, start_y, start_x, end_z, end_y, end_x = self.flatten_index_to_coordinates(
