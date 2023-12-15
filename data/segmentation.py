@@ -8,10 +8,11 @@ from diskcache import Cache
 import torchio as tio
 # from monai.transforms import Compose, LoadImage,  EnsureChannelFirst, Orientation, Spacing,  NormalizeIntensity,  ScaleIntensity
 import nibabel as nib
+from segmentation.config import SegmentationDataset
 
 
 class SegmentationDataset(Dataset):
-    def __init__(self, full_augment: bool, num_classes: int, load_picked: bool = True):
+    def __init__(self, config: SegmentationDataset, full_augment: bool, num_classes: int, load_picked: bool = True):
         self.full_augment = full_augment
         self.basepath = "data/segmentation/train/"
         self.candidates = os.walk(self.basepath).__next__()[1]
@@ -26,7 +27,7 @@ class SegmentationDataset(Dataset):
             transformations.extend([tio.ZNormalization(
                 masking_method=tio.ZNormalization.mean),
                 tio.RescaleIntensity((0, 1)),
-                tio.CropOrPad((224, 224, 128))
+                tio.CropOrPad(config.data_config.image_size),
             ])
         if self.full_augment:
             transformations.append(tio.OneOf(

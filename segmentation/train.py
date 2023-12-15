@@ -16,7 +16,7 @@ def train(config: SegmentationConfig):
         logger=WandbLogger(project="ml4mip")
     )
     model = SegmentationModule(config)
-    dataset = SegmentationDataset(True, config.data_config.n_classes)
+    dataset = SegmentationDataset(config, True, config.data_config.n_classes)
     train_dataset, val_dataset = random_split(dataset, (0.95, 0.05))
 
     train_dataloader = DataLoader(
