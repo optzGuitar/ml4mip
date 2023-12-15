@@ -15,7 +15,6 @@ class DiceLoss(nn.Module):
 
     def forward(self, y_true, y_pred):
         # Prepare inputs
-        y_true = F.one_hot(y_true, y_pred.shape[1])
         y_pred = F.softmax(y_pred, dim=1)
 
         num = torch.sum(torch.square(y_true - y_pred), dim=self.axes)
@@ -36,9 +35,6 @@ class DiceCELoss(nn.Module):
     def forward(self, y_true, y_pred):
         # Dice loss
         loss_dice = self.dice_loss(y_true, y_pred)
-
-        # Prepare inputs
-        y_true = F.one_hot(y_true, y_pred.shape[1]).to(torch.float32)
 
         # Cross entropy loss
         loss_ce = self.cross_entropy(y_pred, y_true)
@@ -65,8 +61,6 @@ class GenSurfLoss(nn.Module):
         # Compute region based loss
         region_loss = self.region_loss(y_true, y_pred)
 
-        # Prepare inputs
-        y_true = F.one_hot(y_true, y_pred.shape[1])
         y_pred = F.softmax(y_pred, dim=1)
 
         if self.class_weights is None:
@@ -113,7 +107,7 @@ class CustomLoss(nn.Module):
         tversky_loss = self.tversky_loss(
             y_hat, y_index)
         gsl_loss = self.gsl_loss(
-            y_hat, y_index, dtm=self.config.loss_config.dtm, alpha=self.config.loss_config.alpha)
+            y_hat, y, dtm=self.config.loss_config.dtm, alpha=self.config.loss_config.alpha)
         combined = (
             self.ce_weight * ce_loss +
             self.tversky_weight * tversky_loss +
