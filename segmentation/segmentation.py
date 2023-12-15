@@ -130,6 +130,7 @@ class SegmentationModule(pl.LightningModule):
     def _handle_patch_batch(self, images: torch.Tensor, segmentation: torch.Tensor, previous_seg_hat_p: list[Optional[torch.Tensor]], is_train: bool = True) -> tuple[torch.Tensor, torch.Tensor]:
         prefix = "train" if is_train else "val"
         for image_patch, segmentation_patch in zip(images, segmentation):
+            print(image_patch.shape, segmentation_patch.shape)
             segmentation_hat = self.model(image_patch)
             loss = self.loss(segmentation_hat,
                              segmentation_patch, is_train=is_train)
