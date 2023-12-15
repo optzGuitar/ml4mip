@@ -12,7 +12,7 @@ class DataConfig:
         default_factory=lambda: torch.Tensor((4, 224, 224, 128)).to(torch.int))
     patch_size: tuple = field(
         default_factory=lambda: torch.Tensor((4, 224 // 4, 224 // 4, 128 // 4)).to(torch.int))
-    strides: tuple = field(default_factory=lambda: torch.Tensor(
+    patch_strides: tuple = field(default_factory=lambda: torch.Tensor(
         (4, 224 // 8, 224 // 8, 128 // 8)).to(torch.int)
     )
 
@@ -42,9 +42,11 @@ class LossConfig:
 
 @dataclass
 class ModelConfig:
-    channels: list = field(default_factory=lambda: [32, 64, 128, 256])
-    strides: list = field(default_factory=lambda: [2, 2, 2, 2])
-    kernels: list = field(default_factory=lambda: [3, 3, 3, 3])
+    channels: list = field(
+        default_factory=lambda: [32, 32, 64, 64, 128, 128, 256, 256]
+    )
+    strides: list = field(default_factory=lambda: [3, 3, 3, 3, 2, 2, 2, 2])
+    kernels: list = field(default_factory=lambda: [7, 7, 5, 5, 3, 3, 3, 3])
     dropout: float = 0.1
 
     number_patches: int = 4

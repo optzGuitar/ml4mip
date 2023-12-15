@@ -75,7 +75,7 @@ class SegmentationModule(pl.LightningModule):
         for i, (loss, segmentaiton_hat) in enumerate(self._handle_patch_batch(image_patches, segmentation_patches, previous_seg_hat_p, is_train=False)):
             # TODO: add image logging!
             start_z, start_y, start_x, end_z, end_y, end_x = self.flatten_index_to_coordinates(
-                i, self.config.data_config.patch_size, self.config.data_config.strides, self.config.data_config.image_size
+                i, self.config.data_config.patch_size, self.config.data_config.patch_strides, self.config.data_config.image_size
             )
             segmentations_hat[:, :, start_z:end_z,
                               start_y:end_y, start_x:end_x
@@ -167,7 +167,7 @@ class SegmentationModule(pl.LightningModule):
             shape[0], *self.config.data_config.patch_size
         )
         b_stride, c_stride, d_stride, h_stride, w_stride = (
-            shape[0], *self.config.data_config.strides
+            shape[0], *self.config.data_config.patch_strides
         )
 
         unfolded = batch.unfold(2, d_patch.item(), d_stride.item()).unfold(3, h_patch.item(), h_stride.item()).unfold(
@@ -181,8 +181,9 @@ class SegmentationModule(pl.LightningModule):
     def compute_overlapping_loss(self, y_hat: torch.Tensor, previous_y_hat: torch.Tensor, is_train: bool = True) -> torch.Tensor:
         mask = torch.zeros_like(y_hat, dtype=torch.bool)
         mask2 = torch.zeros_like(y_hat, dtype=torch.bool)
-        strides = self.config.data_config.strides
-        overlap = self.config.data_config.image_size - self.config.data_config.strides
+        strides = self.config.data_config.patch_strides
+        overlap = self.config.data_config.image_size - \
+            self.config.data_config.patch_strides
         mask[:, :, overlap[0]:, overlap[1]:, overlap[2]:] = True
         mask2[:, :, :strides[0], :strides[1], :strides[2]] = True
 
