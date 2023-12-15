@@ -150,15 +150,15 @@ class SegmentationModule(pl.LightningModule):
             loss = self.loss(segmentation_hat,
                              segmentation_patch, is_train=is_train)
 
-            if previous_seg_hat_p[0] is not None:
-                loss += (self.config.loss_config.patch_loss_weight *
-                         self.compute_overlapping_loss(
-                             segmentation_hat,
-                             previous_seg_hat_p[0],
-                             is_train=is_train,
-                         ))
+            # if previous_seg_hat_p[0] is not None:
+            #     loss += (self.config.loss_config.patch_loss_weight *
+            #              self.compute_overlapping_loss(
+            #                  segmentation_hat,
+            #                  previous_seg_hat_p[0],
+            #                  is_train=is_train,
+            #              ))
 
-            previous_seg_hat_p[0] = segmentation_hat
+            # previous_seg_hat_p[0] = segmentation_hat
 
             self.log(f"{prefix}/loss", loss.detach().cpu().item())
             yield loss, segmentation_hat
