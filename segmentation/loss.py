@@ -109,7 +109,7 @@ class CustomLoss(nn.Module):
         shape = y.shape
         ce_loss = self.ce(y_hat, y)
         tversky_loss = self.tversky_loss(
-            y_hat.view(*shape[:3], -1), y.view(*shape[:3], -1)).view(shape)
+            y_hat.view(*shape[:2], -1), y.view(*shape[:2], -1)).view(shape)
         gsl_loss = self.gsl_loss(y_hat, y)
         combined = (
             self.ce_weight * ce_loss +
