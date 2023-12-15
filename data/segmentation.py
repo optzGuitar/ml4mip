@@ -12,13 +12,13 @@ from segmentation.config import SegmentationConfig
 
 
 class SegmentationDataset(Dataset):
-    def __init__(self, config: SegmentationConfig, full_augment: bool, load_picked: bool = True):
+    def __init__(self, config: SegmentationConfig, full_augment: bool):
         self.full_augment = full_augment
         self.basepath = "data/segmentation/train/"
         self.candidates = os.walk(self.basepath).__next__()[1]
 
         self.pickled_path = "group/hazel/seg_data/"
-        self._load_pickled = load_picked
+        self._load_pickled = config.data_config.load_pickle
 
         transformations = []
         if not self._load_pickled:

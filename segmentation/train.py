@@ -17,7 +17,7 @@ def train(config: SegmentationConfig):
     )
     model = SegmentationModule(config)
     dataset = SegmentationDataset(
-        config, True, config.data_config.n_classes, load_picked=config.data_config.load_pickle)
+        config, True, config.data_config.n_classes)
     train_dataset, val_dataset = random_split(dataset, (0.95, 0.05))
 
     train_dataloader = DataLoader(
