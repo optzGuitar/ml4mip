@@ -136,7 +136,7 @@ class SegmentationModule(pl.LightningModule):
         summed = res.sum()
         summed.requires_grad = True
         gradient = grad(summed, inp_clone, retain_graph=True,
-                        create_graph=True, materialize_grads=True)
+                        create_graph=True, materialize_grads=True)[0]
 
         loss = self.mse_loss(gradient, y)
         self.log(f"{prefix}/xai_loss", loss.detach().cpu().item())
