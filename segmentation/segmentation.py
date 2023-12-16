@@ -190,5 +190,8 @@ class SegmentationModule(pl.LightningModule):
 
         return {
             'optimizer': optimizer,
-            'lr_scheduler': lr_scheduler,
+            'lr_scheduler': {
+                'scheduler': lr_scheduler,
+                'interval': 'step',
+            },
         }
