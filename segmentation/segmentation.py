@@ -132,8 +132,9 @@ class SegmentationModule(pl.LightningModule):
         prefix = "train" if is_train else "val"
         inp_clone = input.clone()
         inp_clone.requires_grad = True
-        res = self.model(inp_clone)
-        summed = res.sum()
+        with torch.enable_grad():
+            res = self.model(inp_clone)
+            summed = res.sum()
         gradient = grad(summed, inp_clone, retain_graph=True,
                         create_graph=True, materialize_grads=True)[0]
 
