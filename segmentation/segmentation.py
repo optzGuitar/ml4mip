@@ -145,7 +145,7 @@ class SegmentationModule(pl.LightningModule):
     def _get_from_batch(self, batch: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
         images = torch.concat(
             [i['data'] for k, i in batch.items() if k != 'label'], dim=1)
-        segmentation = batch['label']['data'].squeeze()
+        segmentation = batch['label']['data']
 
         return images, segmentation
 
