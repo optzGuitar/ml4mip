@@ -102,25 +102,25 @@ class CustomLoss(nn.Module):
         self.config = config
 
     def forward(self, y_hat: torch.Tensor, y: torch.Tensor, is_train: bool = True, log_fn=None) -> torch.Tensor:
-        ce_loss = self.ce(y_hat, y)
-        tversky_loss = self.tversky_loss(
-            y_hat, y)
+        # ce_loss = self.ce(y_hat, y)
+        # tversky_loss = self.tversky_loss(
+        #     y_hat, y)
         gsl_loss = self.gsl_loss(
             y_hat, y, dtm=self.config.loss_config.dtm, alpha=self.config.loss_config.alpha)
         mse = self.mse(y_hat, y)
         combined = (
-            self.ce_weight * ce_loss +
-            self.tversky_weight * tversky_loss +
+            # self.ce_weight * ce_loss +
+            # self.tversky_weight * tversky_loss +
             self.gsl_weight * gsl_loss +
             mse
         )
 
         if log_fn is not None:
             prefix = "train" if is_train else "val"
-            log_fn(
-                f"{prefix}/ce_loss", ce_loss.detach().cpu().mean().item())
-            log_fn(
-                f"{prefix}/tversky_loss", tversky_loss.detach().cpu().mean().item())
+            # log_fn(
+            #     f"{prefix}/ce_loss", ce_loss.detach().cpu().mean().item())
+            # log_fn(
+            #     f"{prefix}/tversky_loss", tversky_loss.detach().cpu().mean().item())
             log_fn(
                 f"{prefix}/gsl_loss", gsl_loss.detach().cpu().mean().item())
             log_fn(

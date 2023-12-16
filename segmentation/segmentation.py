@@ -53,11 +53,11 @@ class SegmentationModule(pl.LightningModule):
 
         images, segmentation = self._get_from_batch(batch)
 
-        image_patches = self._get_patches(images)
-        segmentation_patches = self._get_patches(segmentation)
+        # image_patches = self._get_patches(images)
+        # segmentation_patches = self._get_patches(segmentation)
 
         previous_segmentation_hat_p = [None]
-        for loss, _ in self._handle_patch_batch(image_patches, segmentation_patches, previous_segmentation_hat_p):
+        for loss, _ in self._handle_patch_batch(images, segmentation, previous_segmentation_hat_p):
             self.manual_backward(loss)
 
         if batch_idx % self.config.train_config.gradient_accumulation_steps == 0:
@@ -73,20 +73,21 @@ class SegmentationModule(pl.LightningModule):
 
     def validation_step(self, batch: torch.Tensor, batch_idx: int) -> STEP_OUTPUT:
         images, segmentation = self._get_from_batch(batch)
-        image_patches = self._get_patches(images)
-        segmentation_patches = self._get_patches(segmentation)
+        # image_patches = self._get_patches(images)
+        # segmentation_patches = self._get_patches(segmentation)
 
         previous_seg_hat_p = [None]
-        segmentations_hat = torch.zeros_like(segmentation)
-        for i, (loss, segmentaiton_hat) in enumerate(self._handle_patch_batch(image_patches, segmentation_patches, previous_seg_hat_p, is_train=False)):
+        # segmentations_hat = torch.zeros_like(segmentation)
+        for i, (loss, segmentaiton_hat) in enumerate(self._handle_patch_batch(images, segmentation, previous_seg_hat_p, is_train=False)):
             # TODO: add image logging!
-            start_z, start_y, start_x, end_z, end_y, end_x = self.flatten_index_to_coordinates(
-                i, self.config.data_config.patch_size[1:], self.config.data_config.patch_strides[
-                    1:], self.config.data_config.image_size[1:]
-            )
-            segmentations_hat[:, :, start_z:end_z,
-                              start_y:end_y, start_x:end_x
-                              ] = segmentaiton_hat
+            # start_z, start_y, start_x, end_z, end_y, end_x = self.flatten_index_to_coordinates(
+            #    i, self.config.data_config.patch_size[1:], self.config.data_config.patch_strides[
+            #        1:], self.config.data_config.image_size[1:]
+            # )
+            # segmentations_hat[:, :, start_z:end_z,
+            #                  start_y:end_y, start_x:end_x
+            #                  ] = segmentaiton_hat
+            segmentations_hat = segmentaiton_hat
 
         dice = MulticlassF1Score(
             average=None, num_classes=self.config.data_config.n_classes).to(self.device)
@@ -147,24 +148,24 @@ class SegmentationModule(pl.LightningModule):
 
     def _handle_patch_batch(self, images: torch.Tensor, segmentation: torch.Tensor, previous_seg_hat_p: list[Optional[torch.Tensor]], is_train: bool = True) -> tuple[torch.Tensor, torch.Tensor]:
         prefix = "train" if is_train else "val"
-        for image_patch, segmentation_patch in zip(images, segmentation):
-            segmentation_hat = self.model(image_patch)
+        # for image_patch, segmentation_patch in zip(images, segmentation):
+        segmentation_hat = self.model(images)
 
-            loss = self.loss(segmentation_hat,
-                             segmentation_patch, is_train=is_train, log_fn=self.log)
+        loss = self.loss(segmentation_hat,
+                         segmentation, is_train=is_train, log_fn=self.log)
 
-            # if previous_seg_hat_p[0] is not None:
-            #     loss += (self.config.loss_config.patch_loss_weight *
-            #              self.compute_overlapping_loss(
-            #                  segmentation_hat,
-            #                  previous_seg_hat_p[0],
-            #                  is_train=is_train,
-            #              ))
+        # if previous_seg_hat_p[0] is not None:
+        #     loss += (self.config.loss_config.patch_loss_weight *
+        #              self.compute_overlapping_loss(
+        #                  segmentation_hat,
+        #                  previous_seg_hat_p[0],
+        #                  is_train=is_train,
+        #              ))
 
-            # previous_seg_hat_p[0] = segmentation_hat
+        # previous_seg_hat_p[0] = segmentation_hat
 
-            self.log(f"{prefix}/loss", loss.detach().cpu().item())
-            yield loss, segmentation_hat
+        self.log(f"{prefix}/loss", loss.detach().cpu().item())
+        yield loss, segmentation_hat
 
     def _xai_loss(self, y_hat: torch.Tensor, y: torch.Tensor, input: torch.Tensor) -> torch.Tensor:
         cloned_hat = y_hat.clone()
