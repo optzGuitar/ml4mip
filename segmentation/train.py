@@ -15,6 +15,8 @@ def train(config: SegmentationConfig):
         enable_checkpointing=True,
         logger=WandbLogger(project="ml4mip"),
         log_every_n_steps=1,
+        accumulate_grad_batches=config.train_config.gradient_accumulation_steps,
+        gradient_clip_val=config.loss_config.gradient_clip,
     )
     model = SegmentationModule(config)
     dataset = SegmentationDataset(

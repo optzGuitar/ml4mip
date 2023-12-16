@@ -33,12 +33,9 @@ class TrainConfig:
 @dataclass
 class LossConfig:
     ce_weight: float = 1.0
-    tversky_loss: float = 1.0
     gen_surf_weight: float = 1.0
     patch_loss_weight: float = 0.2
-
-    tversky_alpha: float = 0.3
-    tversky_beta: float = 0.7
+    xai_loss_weight: float = 0.2
 
     cosine_period: int = 10000
     min_lr: float = 1e-6
