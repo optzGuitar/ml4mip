@@ -130,6 +130,9 @@ class SegmentationModule(pl.LightningModule):
 
     def _xai_loss(self, y_hat: torch.Tensor, y: torch.Tensor, input: torch.Tensor, is_train: bool = True) -> torch.Tensor:
         prefix = "train" if is_train else "val"
+        inp_clone = input.clone()
+        inp_clone.requires_grad = True
+        y_hat.requires_grad = True
         gradient = grad(y_hat, input, retain_graph=True)
 
         loss = self.overlap_loss(gradient, y)
