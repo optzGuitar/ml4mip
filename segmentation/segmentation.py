@@ -132,8 +132,9 @@ class SegmentationModule(pl.LightningModule):
         prefix = "train" if is_train else "val"
         inp_clone = input.clone()
         inp_clone.requires_grad = True
-        y_hat.requires_grad = True
-        gradient = grad(y_hat.sum(dim=1), inp_clone, retain_graph=True)
+        summed = y_hat.sum(dim=1)
+        summed.requires_grad = True
+        gradient = grad(summed, inp_clone, retain_graph=True)
 
         loss = self.overlap_loss(gradient, y)
         self.log(f"{prefix}/xai_loss", loss.detach().cpu().item())
