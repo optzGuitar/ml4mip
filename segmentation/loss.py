@@ -102,10 +102,9 @@ class CustomLoss(nn.Module):
         self.config = config
 
     def forward(self, y_hat: torch.Tensor, y: torch.Tensor, is_train: bool = True, log_fn=None) -> torch.Tensor:
-        y_index = torch.argmax(y, dim=1).to(torch.float)
         ce_loss = self.ce(y_hat, y)
         tversky_loss = self.tversky_loss(
-            y_hat, y_index)
+            y_hat, y)
         gsl_loss = self.gsl_loss(
             y_hat, y, dtm=self.config.loss_config.dtm, alpha=self.config.loss_config.alpha)
         mse = self.mse(y_hat, y)
