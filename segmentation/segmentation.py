@@ -133,7 +133,7 @@ class SegmentationModule(pl.LightningModule):
         inp_clone = input.clone()
         inp_clone.requires_grad = True
         res = self.model(inp_clone)
-        summed = res.sum(dim=1)
+        summed = res.sum()
         summed.requires_grad = True
         gradient = summed.backward(retain_graph=True)
 
