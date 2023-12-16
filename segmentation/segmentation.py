@@ -42,7 +42,6 @@ class SegmentationModule(pl.LightningModule):
         self.config = segmentation_config
 
         self.save_hyperparameters('segmentation_config')
-        self.automatic_optimization = False
 
     def training_step(self, batch: torch.Tensor, batch_idx: int) -> STEP_OUTPUT:
         lr_scheduler = self.lr_schedulers()
