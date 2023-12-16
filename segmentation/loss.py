@@ -94,8 +94,8 @@ class CustomLoss(nn.Module):
         self.tversky_weight = tversky_weight
         self.gsl_weight = gsl_weight
         self.ce = nn.BCELoss()
-        self.tversky_loss = smp.losses.TverskyLoss(
-            mode="multiclass",
+        self.tversky_loss = smp.losses.DiceLoss(
+            mode="multilabel",  # I know this is a binary classification problem, but multilabel avoids having to copmute one-hot encoding twice
             alpha=config.loss_config.tversky_alpha, beta=config.loss_config.tversky_beta)
         self.gsl_loss = GenSurfLoss()
         self.mse = nn.MSELoss()
