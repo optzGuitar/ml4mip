@@ -60,7 +60,7 @@ class SegmentationModule(pl.LightningModule):
         for loss, _ in self._handle_patch_batch(images, segmentation, previous_segmentation_hat_p):
             self.manual_backward(loss)
 
-        if batch_idx % self.config.train_config.gradient_accumulation_steps == 0:
+        # if batch_idx % self.config.train_config.gradient_accumulation_steps == 0:
             self.clip_gradients(
                 optimizer,
                 gradient_clip_val=self.config.loss_config.gradient_clip,
