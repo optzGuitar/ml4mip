@@ -130,8 +130,7 @@ class SegmentationModule(pl.LightningModule):
 
     def _xai_loss(self, y_hat: torch.Tensor, y: torch.Tensor, input: torch.Tensor, is_train: bool = True) -> torch.Tensor:
         prefix = "train" if is_train else "val"
-        cloned_hat = y_hat.clone()
-        gradient = grad(cloned_hat, input, retain_graph=True)
+        gradient = grad(y_hat, input, retain_graph=True)
 
         loss = self.overlap_loss(gradient, y)
         self.log(f"{prefix}/xai_loss", loss.detach().cpu().item())
