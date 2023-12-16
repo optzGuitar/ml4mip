@@ -68,6 +68,7 @@ class SegmentationModule(pl.LightningModule):
             )
             optimizer.step()
             optimizer.zero_grad()
+            self.log("train/lr", lr_scheduler.get_last_lr()[0])
             lr_scheduler.step()
 
     def validation_step(self, batch: torch.Tensor, batch_idx: int) -> STEP_OUTPUT:
