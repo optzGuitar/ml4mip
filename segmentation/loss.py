@@ -100,11 +100,9 @@ class CustomLoss(nn.Module):
         ce_loss = self.ce(y_hat, y)
         gsl_loss = self.gsl_loss(
             y_hat, y, dtm=self.config.loss_config.dtm, alpha=self.config.loss_config.alpha)
-        mse = self.mse(y_hat, y)
         combined = (
             self.ce_weight * ce_loss +
-            self.gsl_weight * gsl_loss +
-            mse
+            self.gsl_weight * gsl_loss
         )
 
         if log_fn is not None:
