@@ -122,8 +122,8 @@ class SegmentationModule(pl.LightningModule):
 
         loss = self.loss(segmentation_hat,
                          segmentation, is_train=is_train, log_fn=self.log)
-        loss += self.config.loss_config.xai_loss_weight * \
-            self._xai_loss(segmentation_hat, segmentation, image, is_train)
+        # loss += self.config.loss_config.xai_loss_weight * \
+        #    self._xai_loss(segmentation_hat, segmentation, image, is_train)
 
         self.log(f"{prefix}/loss", loss.detach().cpu().item())
         return loss, segmentation_hat
