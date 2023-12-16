@@ -37,7 +37,7 @@ class SegmentationModule(pl.LightningModule):
         self.loss = CustomLoss(
             segmentation_config,
         )
-        self.overlap_loss = nn.MSELoss()
+        self.mse_loss = nn.MSELoss()
 
         self.config = segmentation_config
 
@@ -135,9 +135,10 @@ class SegmentationModule(pl.LightningModule):
         res = self.model(inp_clone)
         summed = res.sum()
         summed.requires_grad = True
-        gradient = summed.backward(retain_graph=True)
+        gradient = grad(summed, inp_clone, retain_graph=True,
+                        create_graph=True, materialize_grads=True)
 
-        loss = self.overlap_loss(gradient, y)
+        loss = self.mse_loss(gradient, y)
         self.log(f"{prefix}/xai_loss", loss.detach().cpu().item())
         return loss
 
@@ -174,7 +175,7 @@ class SegmentationModule(pl.LightningModule):
         mask[:, :, overlap[0]:, overlap[1]:, overlap[2]:] = True
         mask2[:, :, :strides[0], :strides[1], :strides[2]] = True
 
-        overlap_loss = self.overlap_loss(y_hat[mask], previous_y_hat[mask])
+        overlap_loss = self.mse_loss(y_hat[mask], previous_y_hat[mask])
         prefix = "train" if is_train else "val"
         self.log(f"{prefix}_overlap_loss", overlap_loss.detach().cpu().item())
 
