@@ -134,7 +134,6 @@ class SegmentationModule(pl.LightningModule):
         inp_clone.requires_grad = True
         res = self.model(inp_clone)
         summed = res.sum()
-        summed.requires_grad = True
         gradient = grad(summed, inp_clone, retain_graph=True,
                         create_graph=True, materialize_grads=True)[0]
 
