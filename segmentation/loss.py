@@ -88,11 +88,10 @@ class GenSurfLoss(nn.Module):
 
 
 class CustomLoss(nn.Module):
-    def __init__(self, config: SegmentationConfig, ce_weight: float = 1, tversky_weight: float = 1, gsl_weight: float = 1) -> None:
+    def __init__(self, config: SegmentationConfig) -> None:
         super().__init__()
-        self.ce_weight = ce_weight
-        self.tversky_weight = tversky_weight
-        self.gsl_weight = gsl_weight
+        self.ce_weight = config.loss_config.ce_weight
+        self.gsl_weight = config.loss_config.gen_surf_weight
         self.ce = nn.BCELoss()
         self.gsl_loss = GenSurfLoss()
         self.config = config

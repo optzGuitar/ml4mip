@@ -36,9 +36,6 @@ class SegmentationModule(pl.LightningModule):
 
         self.loss = CustomLoss(
             segmentation_config,
-            ce_weight=segmentation_config.loss_config.ce_weight,
-            tversky_weight=segmentation_config.loss_config.tversky_loss,
-            gsl_weight=segmentation_config.loss_config.gen_surf_weight,
         )
         self.overlap_loss = nn.MSELoss()
 
