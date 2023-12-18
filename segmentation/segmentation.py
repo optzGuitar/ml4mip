@@ -60,30 +60,29 @@ class SegmentationModule(pl.LightningModule):
         # TODO: add image logging!
 
         dice = MulticlassF1Score(
-            average=None, num_classes=self.config.data_config.n_classes).to(self.device)
+            num_classes=self.config.data_config.n_classes).to(self.device)
 
         segmentations_hat_max = torch.argmax(segmentation_hat, dim=1)
         segmentation_max = torch.argmax(segmentation, dim=1)
         for i, name in enumerate(['necrotic', 'edematous', 'enahncing']):
             dice_score = dice(
-                (segmentations_hat_max == i + 1),
-                (segmentation_max == i+1)
+                (segmentations_hat_max == i+1).flatten(),
+                (segmentation_max == i+1).flatten(),
             )
 
             self.log(f"val/dice_{name}", dice_score.mean().item())
 
         tumor_score = compute_hausdorff_distance(
             F.one_hot(segmentations_hat_max,
-                      num_classes=self.config.data_config.n_classes)[:, [1, 3]],
+                      num_classes=self.config.data_config.n_classes)[:, [0, 1, 3]].flatten(),
             F.one_hot(segmentation_max, num_classes=self.config.data_config.n_classes)[
-                :, [1, 4]],
-            include_background=True,
+                :, [0, 1, 4]].flatten(),
         )
         whole_tumor = compute_hausdorff_distance(
             F.one_hot(segmentations_hat_max,
-                      num_classes=self.config.data_config.n_classes)[:, [1, 2, 3]],
-            F.one_hot(segmentation_max, num_classes=self.config.data_config.n_classes)[
-                :, [1, 2, 4]],
+                      num_classes=self.config.data_config.n_classes).flatten(),
+            F.one_hot(segmentation_max,
+                      num_classes=self.config.data_config.n_classes).flatten(),
         )
 
         self.log("val/tumor_score", tumor_score.mean().item())
