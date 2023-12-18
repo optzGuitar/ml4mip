@@ -91,6 +91,9 @@ class SegmentationModule(pl.LightningModule):
 
         return (dice_score.mean() + tumor_score.mean() + whole_tumor.mean()).mean()
 
+    def on_train_epoch_end(self) -> None:
+        torch.cuda.empty_cache()
+
     def flatten_index_to_coordinates(self, index, patch_shape, patch_stride, image_shape):
         # Unpack shapes
         patch_depth, patch_height, patch_width = patch_shape
