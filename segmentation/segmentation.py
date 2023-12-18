@@ -94,6 +94,9 @@ class SegmentationModule(pl.LightningModule):
     def on_train_epoch_end(self) -> None:
         torch.cuda.empty_cache()
 
+    def on_validation_epoch_end(self) -> None:
+        torch.cuda.empty_cache()
+
     def flatten_index_to_coordinates(self, index, patch_shape, patch_stride, image_shape):
         # Unpack shapes
         patch_depth, patch_height, patch_width = patch_shape
