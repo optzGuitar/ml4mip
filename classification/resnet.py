@@ -8,16 +8,18 @@ class ResNet50(pl.LightningModule):
     def __init__(
             self,
             spatial_dims=3,
+            n_input_channels=4,
             num_classes=2,
             loss_fn=CrossEntropyLoss,
-            learning_rate=0.1,
-            weight_decay=0.001,
-            max_epochs=3
+            learning_rate=0.01,
+            weight_decay=0.1,
+            max_epochs=50
         ):
         super().__init__()
         self.model = resnet.resnet50(
             spatial_dims=spatial_dims,
-            num_classes=num_classes
+            num_classes=num_classes,
+            n_input_channels=n_input_channels
         )
         self.loss_fn = loss_fn
         self.lr = learning_rate
