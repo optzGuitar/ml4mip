@@ -64,31 +64,45 @@ class SegmentationModule(pl.LightningModule):
 
         segmentations_hat_max = torch.argmax(segmentation_hat, dim=1)
         segmentation_max = torch.argmax(segmentation, dim=1)
+
+        dice_scores = {}
         for i, name in enumerate(['necrotic', 'edematous', 'enahncing']):
             dice_score = dice(
                 (segmentations_hat_max == i+1).flatten(),
                 (segmentation_max == i+1).flatten(),
             )
+            dice_scores[f"dice_{name}"] = dice_score.mean().item()
 
             self.log(f"val/dice_{name}", dice_score.mean().item())
 
         tumor_score = compute_hausdorff_distance(
             F.one_hot(segmentations_hat_max,
-                      num_classes=self.config.data_config.n_classes)[:, [0, 1, 3]],
-            F.one_hot(segmentation_max, num_classes=self.config.data_config.n_classes)[
-                :, [0, 1, 3]],
+                      num_classes=self.config.data_config.n_classes).swapaxes(1, -1)[:, [0, 1, 3]],
+            F.one_hot(segmentation_max, num_classes=self.config.data_config.n_classes).swapaxes(
+                1, -1)[:, [0, 1, 3]],
         )
         whole_tumor = compute_hausdorff_distance(
             F.one_hot(segmentations_hat_max,
-                      num_classes=self.config.data_config.n_classes),
+                      num_classes=self.config.data_config.n_classes).swapaxes(1, -1),
             F.one_hot(segmentation_max,
-                      num_classes=self.config.data_config.n_classes),
+                      num_classes=self.config.data_config.n_classes).swapaxes(1, -1),
         )
 
-        self.log("val/tumor_score", tumor_score.mean().item())
-        self.log("val/whole_tumor", whole_tumor.mean().item())
+        tumor_mean = tumor_score.mean().item()
+        whole_mean = whole_tumor.mean().item()
+        self.log("val/tumor_score", tumor_mean)
+        self.log("val/whole_tumor", whole_mean)
 
-        return (dice_score.mean() + tumor_score.mean() + whole_tumor.mean()).mean()
+        return {
+            **dice_scores,
+            "tumor_score": tumor_mean,
+            "whole_tumor": whole_mean,
+            "overall_mean": torch.as_tensor([
+                *dice_scores.values(),
+                tumor_mean,
+                whole_mean,
+            ]).mean()
+        }
 
     def on_train_epoch_end(self) -> None:
         torch.cuda.empty_cache()
@@ -169,21 +183,6 @@ class SegmentationModule(pl.LightningModule):
             0, 1, 9, 2, 3, 4, 5, 6, 7, 8).contiguous().view(-1, *patch_size)
 
         return unfolded
-
-    def compute_overlapping_loss(self, y_hat: torch.Tensor, previous_y_hat: torch.Tensor, is_train: bool = True) -> torch.Tensor:
-        mask = torch.zeros_like(y_hat, dtype=torch.bool)
-        mask2 = torch.zeros_like(y_hat, dtype=torch.bool)
-        strides = self.config.data_config.patch_strides
-        overlap = self.config.data_config.image_size - \
-            self.config.data_config.patch_strides
-        mask[:, :, overlap[0]:, overlap[1]:, overlap[2]:] = True
-        mask2[:, :, :strides[0], :strides[1], :strides[2]] = True
-
-        overlap_loss = self.mse_loss(y_hat[mask], previous_y_hat[mask])
-        prefix = "train" if is_train else "val"
-        self.log(f"{prefix}_overlap_loss", overlap_loss.detach().cpu().item())
-
-        return overlap_loss
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)

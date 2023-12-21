@@ -1,4 +1,5 @@
 from pytorch_lightning import Trainer
+from pytorch_lightning.callbacks import ModelCheckpoint
 from torch.utils.data import DataLoader, random_split
 from segmentation.config import SegmentationConfig
 from segmentation.segmentation import SegmentationModule
@@ -9,6 +10,8 @@ from pytorch_lightning.loggers import WandbLogger
 
 def train(config: SegmentationConfig):
     torch.manual_seed(config.seed)
+    checkpoint_callback = ModelCheckpoint(
+        dirpath="segmentation_checkpoints/", save_top_k=10, monitor="overall_sum", mode='max')
     trainer = Trainer(
         max_epochs=config.train_config.epochs,
         enable_checkpointing=True,
@@ -16,6 +19,7 @@ def train(config: SegmentationConfig):
         log_every_n_steps=1,
         accumulate_grad_batches=config.train_config.gradient_accumulation_steps,
         gradient_clip_val=config.loss_config.gradient_clip,
+        callbacks=[checkpoint_callback]
     )
     model = SegmentationModule(config)
     dataset = SegmentationDataset(
