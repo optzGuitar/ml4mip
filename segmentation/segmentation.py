@@ -92,6 +92,11 @@ class SegmentationModule(pl.LightningModule):
         whole_mean = whole_tumor.mean().item()
         self.log("val/tumor_score", tumor_mean)
         self.log("val/whole_tumor", whole_mean)
+        self.log("overall_mean", torch.as_tensor([
+            *dice_scores.values(),
+            tumor_mean,
+            whole_mean,
+        ]).mean())
 
         return {
             **dice_scores,

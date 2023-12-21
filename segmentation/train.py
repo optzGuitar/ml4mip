@@ -11,7 +11,7 @@ from pytorch_lightning.loggers import WandbLogger
 def train(config: SegmentationConfig):
     torch.manual_seed(config.seed)
     checkpoint_callback = ModelCheckpoint(
-        dirpath="segmentation_checkpoints/", save_top_k=10, monitor="overall_sum", mode='max')
+        dirpath="segmentation_checkpoints/", save_top_k=10, monitor="overall_mean", mode='max')
     trainer = Trainer(
         max_epochs=config.train_config.epochs,
         enable_checkpointing=True,
