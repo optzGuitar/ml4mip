@@ -10,7 +10,6 @@ from pytorch_lightning.loggers import WandbLogger
 def train(config: SegmentationConfig):
     torch.manual_seed(config.seed)
     trainer = Trainer(
-        default_root_dir=config.root_dir,
         max_epochs=config.train_config.epochs,
         enable_checkpointing=True,
         logger=WandbLogger(project="ml4mip"),

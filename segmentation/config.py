@@ -59,7 +59,6 @@ class ModelConfig:
 
 @dataclass
 class SegmentationConfig:
-    root_dir: str = "segmentation_logs"
     run_name: str = "segmentation"
     seed: int = 0
     data_config: DataConfig = field(default_factory=DataConfig)
