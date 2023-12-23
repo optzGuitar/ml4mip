@@ -75,19 +75,20 @@ class SegmentationModule(pl.LightningModule):
 
             self.log(f"val/dice_{name}", dice_score.mean().item())
 
+        seg_hat_onehot = F.one_hot(segmentations_hat_max,
+                                   num_classes=self.config.data_config.n_classes)
+        seg_onehot = F.one_hot(
+            segmentation_max, num_classes=self.config.data_config.n_classes)
         tumor_score = compute_hausdorff_distance(
-            F.one_hot(segmentations_hat_max,
-                      num_classes=self.config.data_config.n_classes).swapaxes(1, -1)[:, [0, 1, 3]],
-            F.one_hot(segmentation_max, num_classes=self.config.data_config.n_classes).swapaxes(
-                1, -1)[:, [0, 1, 3]],
+            seg_hat_onehot.swapaxes(1, -1)[:, [0, 1, 3]],
+            seg_onehot.swapaxes(1, -1)[:, [0, 1, 3]],
         )
         tumor_score = tumor_score.flatten()
         tumor_score = tumor_score[~(tumor_score.isnan() | tumor_score.isinf())]
+
         whole_tumor = compute_hausdorff_distance(
-            F.one_hot(segmentations_hat_max,
-                      num_classes=self.config.data_config.n_classes).swapaxes(1, -1),
-            F.one_hot(segmentation_max,
-                      num_classes=self.config.data_config.n_classes).swapaxes(1, -1),
+            seg_hat_onehot.swapaxes(1, -1),
+            seg_onehot.swapaxes(1, -1),
         )
         whole_tumor = whole_tumor.flatten()
         whole_tumor = whole_tumor[~(whole_tumor.isnan() | whole_tumor.isinf())]
