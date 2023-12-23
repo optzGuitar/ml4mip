@@ -6,9 +6,9 @@ import nibabel as nib
 from enums.contrast import Contrasts
 from diskcache import Cache
 import torchio as tio
-# from monai.transforms import Compose, LoadImage,  EnsureChannelFirst, Orientation, Spacing,  NormalizeIntensity,  ScaleIntensity
 import nibabel as nib
 from segmentation.config import SegmentationConfig
+import torch.nn.functional as F
 
 
 class SegmentationDataset(Dataset):
@@ -64,9 +64,9 @@ class SegmentationDataset(Dataset):
         ).unsqueeze(0)
         tensor[tensor == 3] = 0
         tensor[tensor == 4] = 3
+        tensor = F.one_hot(
+            tensor.long(), num_classes=self.config.data_config.n_classes)
         images['label'] = tio.LabelMap(tensor=tensor)
-        images['label'] = tio.OneHot(
-            num_classes=self.config.data_config.n_classes)(images['label'])
 
         data = tio.Subject(**images)
 
