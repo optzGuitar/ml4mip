@@ -29,7 +29,7 @@ class SegmentationModule(pl.LightningModule):
             # kernel_size=segmentation_config.model_config.kernels,
             # up_kernel_size=list(
             #     reversed(segmentation_config.model_config.kernels)),
-            dropout_prob=segmentation_config.model_config.dropout,
+            dropout=segmentation_config.model_config.dropout,
         )
 
         self.loss = CustomLoss(
