@@ -81,12 +81,16 @@ class SegmentationModule(pl.LightningModule):
             F.one_hot(segmentation_max, num_classes=self.config.data_config.n_classes).swapaxes(
                 1, -1)[:, [0, 1, 3]],
         )
+        tumor_score = tumor_score.flatten()
+        tumor_score = tumor_score[~(tumor_score.isnan() | tumor_score.isinf())]
         whole_tumor = compute_hausdorff_distance(
             F.one_hot(segmentations_hat_max,
                       num_classes=self.config.data_config.n_classes).swapaxes(1, -1),
             F.one_hot(segmentation_max,
                       num_classes=self.config.data_config.n_classes).swapaxes(1, -1),
         )
+        whole_tumor = whole_tumor.flatten()
+        whole_tumor = whole_tumor[~(whole_tumor.isnan() | whole_tumor.isinf())]
 
         tumor_mean = tumor_score.mean().item()
         whole_mean = whole_tumor.mean().item()
