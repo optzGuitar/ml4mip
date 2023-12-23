@@ -64,8 +64,6 @@ class SegmentationDataset(Dataset):
         ).unsqueeze(0)
         tensor[tensor == 3] = 0
         tensor[tensor == 4] = 3
-        tensor = F.one_hot(
-            tensor.long(), num_classes=self.config.data_config.n_classes)
         images['label'] = tio.LabelMap(tensor=tensor)
 
         data = tio.Subject(**images)

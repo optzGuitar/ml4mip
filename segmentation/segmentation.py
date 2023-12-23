@@ -169,6 +169,8 @@ class SegmentationModule(pl.LightningModule):
         images = torch.concat(
             [i['data'] for k, i in batch.items() if k != 'label'], dim=1)
         segmentation = batch['label']['data']
+        segmentation = F.one_hot(
+            segmentation, self.config.data_config.n_classes).permute(0, 4, 1, 2, 3)
 
         return images, segmentation
 
