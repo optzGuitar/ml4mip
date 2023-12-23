@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 import torch
 
-IMAGE_WITH = 224
-IMAGE_HEIGHT = 224
+IMAGE_WITH = 256
+IMAGE_HEIGHT = 256
 IMAGE_DEPTH = 128
 
 
