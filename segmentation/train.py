@@ -4,7 +4,7 @@ sys.path.insert(0, "/home/tu-leopinetzki/ml4mip")  # noqa
 from pytorch_lightning.loggers import WandbLogger
 import torch
 from data.segmentation_data import SegmentationDataset
-from segmentation.segmentation import SegmentationModule
+from segmentation.segmentation_module import SegmentationModule
 from segmentation.config import SegmentationConfig, TrainConfig, LossConfig, DataConfig
 from torch.utils.data import DataLoader, random_split
 from pytorch_lightning.callbacks import ModelCheckpoint
