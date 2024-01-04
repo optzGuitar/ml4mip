@@ -1,14 +1,29 @@
-from pytorch_lightning import Trainer
-from pytorch_lightning.callbacks import ModelCheckpoint
-from torch.utils.data import DataLoader, random_split
-from segmentation.config import SegmentationConfig
-from segmentation.segmentation import SegmentationModule
-from data.segmentation import SegmentationDataset
-import torch
+import sys  # noqa
+sys.path.append("/home/tu-leopinetzki/ml4mip")  # noqa
+
 from pytorch_lightning.loggers import WandbLogger
+import torch
+from data.segmentation import SegmentationDataset
+from segmentation.segmentation import SegmentationModule
+from segmentation.config import SegmentationConfig, TrainConfig, LossConfig, DataConfig
+from torch.utils.data import DataLoader, random_split
+from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning import Trainer
 
 
-def train(config: SegmentationConfig):
+def train():
+    config = SegmentationConfig(
+        run_name="SegResNetAccCEXAI",
+        train_config=TrainConfig(
+            epochs=50,
+            gradient_accumulation_steps=32,
+            batch_size=2,
+        ),
+        loss_config=LossConfig(
+            cosine_period=200
+        ),
+        data_config=DataConfig(load_pickle=False)
+    )
     torch.manual_seed(config.seed)
     checkpoint_callback = ModelCheckpoint(
         dirpath="segmentation_checkpoints/", save_top_k=10, monitor="overall_mean", mode='max')
