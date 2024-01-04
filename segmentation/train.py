@@ -1,5 +1,5 @@
 import sys  # noqa
-sys.path.append("/home/tu-leopinetzki/ml4mip")  # noqa
+sys.path.insert(0, "/home/tu-leopinetzki/ml4mip")  # noqa
 
 from pytorch_lightning.loggers import WandbLogger
 import torch
