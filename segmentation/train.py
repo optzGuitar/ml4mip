@@ -52,3 +52,7 @@ def train():
                 train_dataloaders=train_dataloader,
                 val_dataloaders=val_dataloader
                 )
+
+
+if __name__ == "__main__":
+    train()
