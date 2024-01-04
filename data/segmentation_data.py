@@ -14,10 +14,10 @@ import torch.nn.functional as F
 class SegmentationDataset(Dataset):
     def __init__(self, config: SegmentationConfig, full_augment: bool):
         self.full_augment = full_augment
-        self.basepath = "data/segmentation/train/"
+        self.basepath = "/home/tu-leopinetzki/data/segmentation/train"
         self.candidates = os.walk(self.basepath).__next__()[1]
 
-        self.pickled_path = "group/hazel/seg_data/"
+        self.pickled_path = "/home/tu-leopinetzki/group/hazel/seg_data/"
         self._load_pickled = config.data_config.load_pickle
 
         transformations = []
