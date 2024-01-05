@@ -1,3 +1,4 @@
+import os
 import sys  # noqa
 sys.path.insert(0, "/home/tu-leopinetzki/ml4mip")  # noqa
 
@@ -13,7 +14,7 @@ from pytorch_lightning import Trainer
 
 def train():
     config = SegmentationConfig(
-        run_name="seg_run1",
+        run_name="unet",
         train_config=TrainConfig(
             epochs=50,
             gradient_accumulation_steps=32,
@@ -36,6 +37,9 @@ def train():
         gradient_clip_val=config.loss_config.gradient_clip,
         callbacks=[checkpoint_callback],
     )
+    if os.path.exists(f"segmentation_checkpoints/{config.run_name}_epoch_49.ckpt"):
+        model = SegmentationModule.load_from_checkpoint(
+            f"segmentation_checkpoints/{config.run_name}_last.ckpt", config=config)
     model = SegmentationModule(config)
     dataset = SegmentationDataset(
         config, True)

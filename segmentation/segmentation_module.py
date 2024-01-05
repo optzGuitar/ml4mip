@@ -125,7 +125,7 @@ class SegmentationModule(pl.LightningModule):
     def on_train_epoch_end(self) -> None:
         torch.cuda.empty_cache()
         self.trainer.save_checkpoint(
-            f"segmentation_checkpoints/{self.config.run_name}_epoch_{self.current_epoch}.ckpt"
+            f"segmentation_checkpoints/{self.config.run_name}_last.ckpt"
         )
 
     def on_validation_epoch_end(self) -> None:
