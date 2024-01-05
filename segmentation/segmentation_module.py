@@ -53,10 +53,6 @@ class SegmentationModule(pl.LightningModule):
     def validation_step(self, batch: torch.Tensor, batch_idx: int) -> STEP_OUTPUT:
         images, segmentation = self._get_from_batch(batch)
 
-        if len(images.shape) == 4:
-            images = images.unsqueeze(0)
-            segmentation = segmentation.unsqueeze(0)
-
         with torch.no_grad():
             _, segmentation_hat = self._infere(
                 images, segmentation, is_train=False)
@@ -190,6 +186,11 @@ class SegmentationModule(pl.LightningModule):
         images = torch.concat(
             [i['data'] for k, i in batch.items() if k != 'label'], dim=1)
         segmentation = batch['label']['data']
+
+        if len(images.shape) == 4:
+            images = images.unsqueeze(0)
+            segmentation = segmentation.unsqueeze(0)
+
         segmentation = F.one_hot(
             segmentation.squeeze().to(torch.long), self.config.data_config.n_classes).permute(0, 4, 1, 2, 3).to(torch.float)
 
