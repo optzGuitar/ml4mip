@@ -192,7 +192,7 @@ class SegmentationModule(pl.LightningModule):
             segmentation = segmentation.unsqueeze(0)
 
         segmentation = F.one_hot(
-            segmentation.squeeze().to(torch.long), self.config.data_config.n_classes).permute(0, 4, 1, 2, 3).to(torch.float)
+            segmentation.squeeze(1).to(torch.long), self.config.data_config.n_classes).permute(0, 4, 1, 2, 3).to(torch.float)
 
         return images, segmentation
 
