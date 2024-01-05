@@ -17,7 +17,7 @@ def train():
         train_config=TrainConfig(
             epochs=50,
             gradient_accumulation_steps=32,
-            batch_size=2,
+            batch_size=3,
         ),
         loss_config=LossConfig(
             cosine_period=200
