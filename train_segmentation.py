@@ -13,7 +13,7 @@ from pytorch_lightning import Trainer
 
 def train():
     config = SegmentationConfig(
-        run_name="SegResNetAccCEXAI",
+        run_name="seg_run1",
         train_config=TrainConfig(
             epochs=50,
             gradient_accumulation_steps=32,
