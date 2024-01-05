@@ -97,7 +97,6 @@ class CustomLoss(nn.Module):
         self.config = config
 
     def forward(self, y_hat: torch.Tensor, y: torch.Tensor, is_train: bool = True, log_fn=None) -> torch.Tensor:
-        print(y_hat.shape, y.shape)
         ce_loss = self.ce(y_hat, y)
         gsl_loss = self.gsl_loss(
             y_hat, y, dtm=self.config.loss_config.dtm, alpha=self.config.loss_config.alpha)
