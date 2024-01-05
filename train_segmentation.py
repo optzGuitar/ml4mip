@@ -34,7 +34,8 @@ def train():
         log_every_n_steps=1,
         accumulate_grad_batches=config.train_config.gradient_accumulation_steps,
         gradient_clip_val=config.loss_config.gradient_clip,
-        callbacks=[checkpoint_callback]
+        callbacks=[checkpoint_callback],
+        fast_dev_run=True,
     )
     model = SegmentationModule(config)
     dataset = SegmentationDataset(

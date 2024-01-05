@@ -93,6 +93,10 @@ class SegmentationModule(pl.LightningModule):
 
         tumor_mean = tumor_score.mean().item()
         whole_mean = whole_tumor.mean().item()
+
+        tumor_mean = 0 if whole_tumor.isnan() | whole_tumor.isinf() else tumor_mean
+        whole_mean = 0 if whole_tumor.isnan() | whole_tumor.isinf() else whole_mean
+
         self.log("val/tumor_score", tumor_mean)
         self.log("val/whole_tumor", whole_mean)
         self.log("overall_mean", torch.as_tensor([
@@ -114,6 +118,9 @@ class SegmentationModule(pl.LightningModule):
 
     def on_train_epoch_end(self) -> None:
         torch.cuda.empty_cache()
+        self.trainer.save_checkpoint(
+            f"segmentation_checkpoints/{self.config.run_name}_epoch_{self.current_epoch}.ckpt"
+        )
 
     def on_validation_epoch_end(self) -> None:
         torch.cuda.empty_cache()
