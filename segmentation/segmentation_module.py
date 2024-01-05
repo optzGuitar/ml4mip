@@ -213,6 +213,8 @@ class SegmentationModule(pl.LightningModule):
             eta_min=self.config.loss_config.min_lr,
         )
 
+        self.model = torch.jit.script(self.model)
+
         return {
             'optimizer': optimizer,
             'lr_scheduler': {
