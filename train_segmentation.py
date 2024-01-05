@@ -49,7 +49,7 @@ def train():
         train_dataset, batch_size=config.train_config.batch_size, num_workers=config.train_config.num_workers
     )
     val_dataloader = DataLoader(
-        val_dataset, batch_size=config.train_config.batch_size, num_workers=config.train_config.num_workers
+        val_dataset, batch_size=1, num_workers=config.train_config.num_workers
     )
 
     trainer.fit(model,
