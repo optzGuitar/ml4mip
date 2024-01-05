@@ -109,6 +109,8 @@ class SegmentationModule(pl.LightningModule):
             whole_mean,
         ]).mean())
 
+        torch.cuda.empty_cache()
+
         return {
             **dice_scores,
             "tumor_score": tumor_mean,
