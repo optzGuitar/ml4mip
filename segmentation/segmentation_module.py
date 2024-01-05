@@ -53,8 +53,9 @@ class SegmentationModule(pl.LightningModule):
     def validation_step(self, batch: torch.Tensor, batch_idx: int) -> STEP_OUTPUT:
         images, segmentation = self._get_from_batch(batch)
 
-        _, segmentation_hat = self._infere(
-            images, segmentation, is_train=False)
+        with torch.no_grad():
+            _, segmentation_hat = self._infere(
+                images, segmentation, is_train=False)
         # TODO: add image logging!
 
         dice = MulticlassF1Score(
