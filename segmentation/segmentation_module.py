@@ -94,8 +94,8 @@ class SegmentationModule(pl.LightningModule):
         tumor_mean = tumor_score.mean().item()
         whole_mean = whole_tumor.mean().item()
 
-        tumor_mean = 0 if whole_tumor.isnan() | whole_tumor.isinf() else tumor_mean
-        whole_mean = 0 if whole_tumor.isnan() | whole_tumor.isinf() else whole_mean
+        tumor_mean = 0 if tumor_mean.isnan() | tumor_mean.isinf() else tumor_mean
+        whole_mean = 0 if whole_mean.isnan() | whole_mean.isinf() else whole_mean
 
         self.log("val/tumor_score", tumor_mean)
         self.log("val/whole_tumor", whole_mean)
