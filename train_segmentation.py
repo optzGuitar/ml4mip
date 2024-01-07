@@ -17,7 +17,7 @@ def train():
         run_name="unet_tversky",
         train_config=TrainConfig(
             epochs=50,
-            gradient_accumulation_steps=32,
+            gradient_accumulation_steps=16,
             batch_size=2,
         ),
         loss_config=LossConfig(
@@ -37,10 +37,10 @@ def train():
         gradient_clip_val=config.loss_config.gradient_clip,
         callbacks=[checkpoint_callback],
     )
+    model = SegmentationModule(config)
     if os.path.exists(f"segmentation_checkpoints/{config.run_name}_last.ckpt"):
         model = SegmentationModule.load_from_checkpoint(
             f"segmentation_checkpoints/{config.run_name}_last.ckpt", config=config)
-    model = SegmentationModule(config)
     dataset = SegmentationDataset(
         config, True)
     train_dataset, val_dataset = random_split(dataset, (0.95, 0.05))
