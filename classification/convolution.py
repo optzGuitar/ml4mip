@@ -243,9 +243,9 @@ class convNd(nn.Module):
 
 
 class BatchNorm4d(nn.Module):
-    def __init__(self, channel_size):
+    def __init__(self, channel_size, eps=0.00001, momentum=0.1):
         super(BatchNorm4d, self).__init__()
-        self.norm = nn.BatchNorm1d(channel_size)
+        self.norm = nn.BatchNorm1d(channel_size, eps=eps, momentum=momentum)
 
     def forward(self, x):
         shape_x = x.shape
