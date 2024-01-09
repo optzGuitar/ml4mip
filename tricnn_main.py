@@ -1,4 +1,4 @@
-from tricnn_model import TriCNN_Lightning
+from classification.tricnn_model import TriCNN_Lightning
 from pytorch_lightning import Trainer
 from torch.utils.data import random_split
 from torch.utils.data import DataLoader, Dataset
