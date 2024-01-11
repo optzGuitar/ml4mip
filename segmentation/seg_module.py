@@ -50,7 +50,7 @@ class SegModule(pl.LightningModule):
         optim = torch.optim.Adam(
             self.unet.parameters(), lr=self.config.loss_config.start_lr)
         lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optim, self.config.loss_config.cosine_period,
-                                                                            eta_min=self.config.loss_config.min_lr, T_0=5000)
+                                                                            eta_min=self.config.loss_config.min_lr)
         self.unet = torch.jit.script(self.unet)
         return {
             "optimizer": optim,
