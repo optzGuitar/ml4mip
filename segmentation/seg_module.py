@@ -16,7 +16,7 @@ class SegModule(pl.LightningDataModule):
     def __init__(self, segmentation_config: SegmentationConfig) -> None:
         super().__init__()
 
-        self.model = nets.Unet(
+        self.unet = nets.Unet(
             spatial_dims=segmentation_config.data_config.n_dims,
             in_channels=segmentation_config.data_config.n_channels,
             out_channels=segmentation_config.data_config.n_classes,
@@ -40,7 +40,7 @@ class SegModule(pl.LightningDataModule):
         for patch in patch_loader:
             locations = patch[tio.LOCATION]
             x, y = self.split_batch(patch)
-            patch_prediction = self.model(x)
+            patch_prediction = self.unet(x)
             aggregator.add_batch(patch_prediction, locations)
 
         prediction = aggregator.get_output_tensor()
@@ -48,11 +48,11 @@ class SegModule(pl.LightningDataModule):
 
     def configure_optimizers(self):
         optim = torch.optim.Adam(
-            self.model.parameters(), lr=self.config.loss_config.start_lr)
+            self.unet.parameters(), lr=self.config.loss_config.start_lr)
         lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optim, self.config.loss_config.cosine_period,
                                                                             eta_min=self.config.loss_config.min_lr, T_0=5000)
 
-        self.model = torch.jit.script(self.model)
+        self.unet = torch.jit.script(self.unet)
 
         return {
             "optimizer": optim,
@@ -158,7 +158,7 @@ class SegModule(pl.LightningDataModule):
         x, y = self.split_batch(batch)
         x = x.float()
 
-        prediction = self.model(x)
+        prediction = self.unet(x)
         metrics = self.metrics(prediction, y, is_train=True)
 
         return metrics
@@ -168,7 +168,7 @@ class SegModule(pl.LightningDataModule):
             x, y = self.split_batch(batch)
             x = x.float()
 
-            prediction = self.model(x)
+            prediction = self.unet(x)
             metrics = self.metrics(prediction, y, is_train=False)
 
             return metrics
