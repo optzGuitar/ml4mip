@@ -5,7 +5,7 @@ sys.path.insert(0, "/home/tu-leopinetzki/ml4mip")  # noqa
 from pytorch_lightning.loggers import WandbLogger
 import torch
 from data.segmentation_data import SegmentationDataset
-from segmentation.seg_module import SegModule as SegmentationModule
+from segmentation.seg_module import SegModule
 from segmentation.config import SegmentationConfig, TrainConfig, LossConfig, DataConfig
 from torch.utils.data import DataLoader, random_split
 from pytorch_lightning.callbacks import ModelCheckpoint
@@ -37,9 +37,9 @@ def train():
         gradient_clip_val=config.loss_config.gradient_clip,
         callbacks=[checkpoint_callback],
     )
-    model = SegmentationModule(config)
+    model = SegModule(config)
     if os.path.exists(f"segmentation_checkpoints/{config.run_name}_last.ckpt"):
-        model = SegmentationModule.load_from_checkpoint(
+        model = SegModule.load_from_checkpoint(
             f"segmentation_checkpoints/{config.run_name}_last.ckpt", config=config)
     dataset = SegmentationDataset(
         config, True)
