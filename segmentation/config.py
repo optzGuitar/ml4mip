@@ -37,6 +37,7 @@ class LossConfig:
     patch_loss_weight: float = 0.2
     xai_loss_weight: float = 0.2
 
+    start_lr: float = 0.001
     cosine_period: int = 100
     min_lr: float = 1e-6
     gradient_clip: float = 2.0

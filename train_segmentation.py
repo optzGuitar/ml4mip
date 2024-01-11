@@ -5,7 +5,7 @@ sys.path.insert(0, "/home/tu-leopinetzki/ml4mip")  # noqa
 from pytorch_lightning.loggers import WandbLogger
 import torch
 from data.segmentation_data import SegmentationDataset
-from segmentation.segmentation_module import SegmentationModule
+from segmentation.seg_module import SegModule as SegmentationModule
 from segmentation.config import SegmentationConfig, TrainConfig, LossConfig, DataConfig
 from torch.utils.data import DataLoader, random_split
 from pytorch_lightning.callbacks import ModelCheckpoint
@@ -14,7 +14,7 @@ from pytorch_lightning import Trainer
 
 def train():
     config = SegmentationConfig(
-        run_name="unet_tversky",
+        run_name="tio_pipeline",
         train_config=TrainConfig(
             epochs=50,
             gradient_accumulation_steps=16,
