@@ -10,7 +10,7 @@ class ResNet50(pl.LightningModule):
             spatial_dims=3,
             n_input_channels=4,
             num_classes=2,
-            loss_fn=CrossEntropyLoss,
+            loss_fn=CrossEntropyLoss(),
             learning_rate=0.01,
             weight_decay=0.1,
             max_epochs=50
