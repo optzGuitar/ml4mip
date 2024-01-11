@@ -12,7 +12,7 @@ from segmentation.config import SegmentationConfig
 from segmentation.loss import CustomLoss
 
 
-class SegModule(pl.LightningDataModule):
+class SegModule(pl.LightningModule):
     def __init__(self, segmentation_config: SegmentationConfig) -> None:
         super().__init__()
 
@@ -51,7 +51,7 @@ class SegModule(pl.LightningDataModule):
             self.unet.parameters(), lr=self.config.loss_config.start_lr)
         lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optim, self.config.loss_config.cosine_period,
                                                                             eta_min=self.config.loss_config.min_lr, T_0=5000)
-
+        self.unet = torch.jit.script(self.unet)
         return {
             "optimizer": optim,
             "lr_scheduler": {
