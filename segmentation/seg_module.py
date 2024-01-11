@@ -52,8 +52,6 @@ class SegModule(pl.LightningDataModule):
         lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optim, self.config.loss_config.cosine_period,
                                                                             eta_min=self.config.loss_config.min_lr, T_0=5000)
 
-        self.unet = torch.jit.script(self.unet)
-
         return {
             "optimizer": optim,
             "lr_scheduler": {
