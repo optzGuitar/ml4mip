@@ -75,7 +75,7 @@ class SegModule(pl.LightningModule):
         return images, segmentation
 
     def metrics(self, prediction, y, is_train: bool):
-        loss = self.loss(prediction, y)
+        loss = self.loss(prediction, y, is_train, self.log)
 
         prefix = "train" if is_train else "val"
 
