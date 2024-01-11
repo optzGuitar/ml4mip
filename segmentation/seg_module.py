@@ -83,7 +83,7 @@ class SegModule(pl.LightningModule):
 
         if is_train:
             return {
-                "loss": loss.mean().item(),
+                "loss": loss,
             }
 
         dice = MulticlassF1Score(
