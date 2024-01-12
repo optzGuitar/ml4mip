@@ -159,6 +159,8 @@ class SegModule(pl.LightningModule):
         prediction = self.unet(x)
         metrics = self.metrics(prediction, y, is_train=True)
 
+        torch.cuda.empty_cache()
+
         return metrics
 
     def validation_step(self, batch, batch_idx):
@@ -168,5 +170,7 @@ class SegModule(pl.LightningModule):
 
             prediction = self.unet(x)
             metrics = self.metrics(prediction, y, is_train=False)
+
+            torch.cuda.empty_cache()
 
             return metrics
