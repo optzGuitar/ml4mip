@@ -14,7 +14,7 @@ from pytorch_lightning import Trainer
 
 def train():
     config = SegmentationConfig(
-        run_name="tio_pipeline",
+        run_name="tio_pipeline_fr",
         train_config=TrainConfig(
             epochs=50,
             gradient_accumulation_steps=16,
