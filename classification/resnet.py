@@ -5,6 +5,8 @@ from torch.optim import AdamW
 from enums.contrast import ClassificationContrasts
 import torch
 import torchio as tio
+
+
 class ResNet50(pl.LightningModule):
     def __init__(
             self,
@@ -12,7 +14,7 @@ class ResNet50(pl.LightningModule):
             n_input_channels=4,
             num_classes=2,
             loss_fn=CrossEntropyLoss(),
-            learning_rate=0.01,
+            learning_rate=0.001,
             weight_decay=0.1,
             max_epochs=1
         ):
@@ -42,6 +44,7 @@ class ResNet50(pl.LightningModule):
         label = batch[tio.LABEL]
         output = self.forward(input_images)
         loss = self.loss_fn(output, label)
+        self.log("val_loss", loss, prog_bar=True)
         return loss
     
     def configure_optimizers(self):
