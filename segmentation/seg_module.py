@@ -153,6 +153,9 @@ class SegModule(pl.LightningModule):
         }
 
     def training_step(self, batch, batch_idx):
+        if batch_idx % 100 == 0:
+            self.trainer.save_checkpoint(
+                f"segmentation_checkpoints/{self.config.run_name}_last.ckpt")
         x, y = self.split_batch(batch)
         x = x.float()
 
