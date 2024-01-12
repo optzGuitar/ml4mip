@@ -33,10 +33,10 @@ class SegModule(pl.LightningModule):
 
     def forward(self, subject: dict):
         sampler = tio.inference.GridSampler(
-            subject, patch_size=self.hparams['patch_size'], patch_overlap=4)
+            subject, patch_size=self.config.data_config.patch_size, patch_overlap=16)
         aggregator = tio.inference.GridAggregator(sampler)
         patch_loader = DataLoader(
-            sampler, batch_size=self.hparams['batch_size'])
+            sampler, batch_size=self.config.data_config.patch_size)
         for patch in patch_loader:
             locations = patch[tio.LOCATION]
             x, y = self.split_batch(patch)
@@ -156,7 +156,7 @@ class SegModule(pl.LightningModule):
         x, y = self.split_batch(batch)
         x = x.float()
 
-        prediction = self.unet(x)
+        prediction = self.forward(x)
         metrics = self.metrics(prediction, y, is_train=True)
 
         torch.cuda.empty_cache()
