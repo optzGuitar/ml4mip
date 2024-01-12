@@ -130,8 +130,8 @@ class SegModule(pl.LightningModule):
             'inf') or tumor_mean == float(
             '-inf') else whole_mean
 
-        self.log("{prefix}/tumor_score", tumor_mean)
-        self.log("{prefix}/whole_tumor", whole_mean)
+        self.log(f"{prefix}/tumor_score", tumor_mean)
+        self.log(f"{prefix}/whole_tumor", whole_mean)
         self.log("overall_mean", torch.as_tensor([
             *dice_scores.values(),
             tumor_mean,
