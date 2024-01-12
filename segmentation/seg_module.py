@@ -144,7 +144,7 @@ class SegModule(pl.LightningModule):
         x, y = self.split_batch(batch)
         x = x.float()
 
-        prediction = self.unet(batch)
+        prediction = self.unet(x)
         metrics = self.metrics(prediction, y, is_train=True)
 
         torch.cuda.empty_cache()
