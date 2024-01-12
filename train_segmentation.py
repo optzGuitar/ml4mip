@@ -40,7 +40,7 @@ def train():
     model = SegModule(config)
     if os.path.exists(f"segmentation_checkpoints/{config.run_name}_last.ckpt"):
         model = SegModule.load_from_checkpoint(
-            f"segmentation_checkpoints/{config.run_name}_last.ckpt", config=config)
+            f"segmentation_checkpoints/{config.run_name}_last.ckpt", segmentation_config=config)
     dataset = SegmentationDataset(
         config, True)
     train_dataset, val_dataset = random_split(dataset, (0.95, 0.05))
