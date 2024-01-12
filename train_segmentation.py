@@ -46,19 +46,19 @@ def train():
         config, True)
     train_dataset, val_dataset = random_split(dataset, (0.95, 0.05))
 
-    sampler = tio.data.LabelSampler(
-        patch_size=config.data_config.patch_size, label_probabilities=[0.1, 0.3, 0.3, 0.3])
-    queue = tio.Queue(
-        train_dataset,
-        100,
-        9,
-        sampler,
-        shuffle_subjects=True,
-        num_workers=config.train_config.num_workers,
-    )
+    # sampler = tio.data.LabelSampler(
+    #     patch_size=config.data_config.patch_size, label_probabilities=[0.1, 0.3, 0.3, 0.3])
+    # queue = tio.Queue(
+    #     train_dataset,
+    #     100,
+    #     9,
+    #     sampler,
+    #     shuffle_subjects=True,
+    #     num_workers=config.train_config.num_workers,
+    # )
 
     train_dataloader = DataLoader(
-        queue, batch_size=config.train_config.batch_size, num_workers=0
+        train_dataset, batch_size=config.train_config.batch_size, num_workers=0
     )
     val_dataloader = DataLoader(
         val_dataset, batch_size=1, num_workers=config.train_config.num_workers
