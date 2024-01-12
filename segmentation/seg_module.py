@@ -32,6 +32,7 @@ class SegModule(pl.LightningModule):
         )
 
     def forward(self, subject: dict):
+        subject = tio.Subject(**subject)
         sampler = tio.inference.GridSampler(
             subject, patch_size=self.config.data_config.patch_size, patch_overlap=16)
         aggregator = tio.inference.GridAggregator(sampler)
