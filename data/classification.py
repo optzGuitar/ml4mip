@@ -11,7 +11,6 @@ import torchio as tio
 import pickle
 
 
-
 class ClassificationDataset(Dataset):
     def __init__(self, full_augment: bool, load_pickled: bool = False,) -> None:
         self.basepath = "/data/classification/"
@@ -23,14 +22,18 @@ class ClassificationDataset(Dataset):
         self.full_augment = full_augment
         train_path = os.path.join(self.basepath, 'train/')
         self.candidates = os.walk(train_path).__next__()[1]
-        
+
         transformations = []
-        transformations.extend([tio.ToCanonical(),
-            tio.Resample(tio.ScalarImage(os.path.join(train_path, self.candidates[0], ClassificationContrasts.flair.value))), 
-            tio.ZNormalization(masking_method=tio.ZNormalization.mean),
-            tio.RescaleIntensity((0, 1)),
-            tio.CropOrPad((112, 112, 64))
-        ])
+        transformations.extend(
+            [tio.ToCanonical(),
+             tio.Resample(tio.ScalarImage(os.path.join(
+                 train_path, self.candidates[0], ClassificationContrasts.flair.value))),
+             tio.ZNormalization(
+                masking_method=tio.ZNormalization.mean),
+             tio.RescaleIntensity((0, 1)),
+             tio.Resize((128, 128, 64))
+             ]
+        )
         augmentations = []
         if self.full_augment:
             augmentations.append(tio.OneOf(
@@ -41,24 +44,24 @@ class ClassificationDataset(Dataset):
 
         self.__transforms = tio.Compose(transformations)
         self.__augmentation = tio.Compose(augmentations)
-        
+
     def __len__(self) -> int:
-        return len(self.candidates)  
-    
+        return len(self.candidates)
+
     def load_candidate(self, index: int) -> tio.Subject:
         if self._load_pickled:
             with open(self.picklepath + str(index), "rb") as f:
                 return pickle.load(f)
         candidate = self.candidates[index]
         path = os.path.join(self.basepath, 'train/', candidate)
-        
+
         images = {}
         for contrast in ClassificationContrasts.values():
             image_path = os.path.join(path, contrast)
             images[contrast] = tio.ScalarImage(image_path)
         # images['label'] = one_hot(torch.as_tensor(self._targets[candidate]), num_classes=2)
         images['label'] = torch.tensor(self._targets[candidate])
-        subject = tio.Subject(**images) 
+        subject = tio.Subject(**images)
         return subject
 
     def __getitem__(self, index: int) -> tio.Subject:

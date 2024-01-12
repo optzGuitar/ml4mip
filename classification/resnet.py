@@ -5,19 +5,20 @@ from torch.optim import AdamW
 from enums.contrast import ClassificationContrasts
 import torch
 import torchio as tio
+import torchmetrics as tm
 
 
 class ResNet50(pl.LightningModule):
     def __init__(
-            self,
-            spatial_dims=3,
-            n_input_channels=4,
-            num_classes=2,
-            loss_fn=CrossEntropyLoss(),
-            learning_rate=0.001,
-            weight_decay=0.1,
-            max_epochs=1
-        ):
+        self,
+        spatial_dims=3,
+        n_input_channels=4,
+        num_classes=2,
+        loss_fn=CrossEntropyLoss(),
+        learning_rate=0.001,
+        weight_decay=0.1,
+        max_epochs=1
+    ):
         super().__init__()
         self.model = resnet.resnet50(
             spatial_dims=spatial_dims,
@@ -28,29 +29,46 @@ class ResNet50(pl.LightningModule):
         self.lr = learning_rate
         self.wd = weight_decay
         self.max_epochs = max_epochs
-    
+
     def forward(self, x):
         return self.model(x)
-    
+
     def training_step(self, batch, batch_idx):
-        input_images = torch.cat([i[tio.DATA] for k, i in batch.items() if k != tio.LABEL], dim=1)
+        input_images = torch.cat(
+            [i[tio.DATA] for k, i in batch.items() if k != tio.LABEL], dim=1)
         label = batch[tio.LABEL]
         output = self.forward(input_images)
         loss = self.loss_fn(output, label)
+        self.log("train/loss", loss, prog_bar=True)
         return loss
-    
+
     def validation_step(self, batch, batch_idx):
-        input_images = torch.cat([i[tio.DATA] for k, i in batch.items() if k != tio.LABEL], dim=1)
+        input_images = torch.cat(
+            [i[tio.DATA] for k, i in batch.items() if k != tio.LABEL], dim=1)
         label = batch[tio.LABEL]
         output = self.forward(input_images)
         loss = self.loss_fn(output, label)
-        self.log("val_loss", loss, prog_bar=True)
-        return loss
-    
+
+        acc = tm.functional.accuracy(output, label)
+        prec = tm.functional.precision(output, label)
+        rec = tm.functional.recall(output, label)
+        f1 = tm.functional.f1(output, label)
+        auc = tm.functional.auroc(output, label)
+
+        self.log("val/loss", loss)
+        self.log("val/acc", acc)
+        self.log("val/prec", prec)
+        self.log("val/rec", rec)
+        self.log("val/f1", f1)
+        self.log("val/auc", auc)
+
+        return {"loss": loss, "acc": acc, "prec": prec, "rec": rec, "f1": f1, "auc": auc}
+
     def configure_optimizers(self):
         optimizer = AdamW(
             self.model.parameters(),
             lr=self.lr,
             weight_decay=self.wd
         )
+        self.model = torch.jit.script(self.model)
         return optimizer
