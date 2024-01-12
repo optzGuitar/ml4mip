@@ -10,3 +10,4 @@ monai
 tqdm
 pytorch_lightning
 segmentation-models-pytorch
+lightning
