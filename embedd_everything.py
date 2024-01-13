@@ -28,7 +28,7 @@ if __name__ == "__main__":
             data = input_images.to("cuda:0")
 
             embedded = []
-            slice = slice.permute(4, 0, 1, 2, 3)
+            slice = data.permute(4, 0, 1, 2, 3)
             orig_shape = slice.shape
             slice = slice.view(
                 orig_shape[0] * orig_shape[1], *orig_shape[2:])
