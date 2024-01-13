@@ -6,6 +6,70 @@ from enums.contrast import ClassificationContrasts
 import torch
 import torchio as tio
 import torchmetrics as tm
+import torch.nn as nn
+import torchvision.models as models
+
+
+class Block(nn.Module):
+    def __init__(self, input_channels, filters, kernel_size, flatten=False):
+        super().__init__()
+        stride = 2
+        padding = ((kernel_size - 1) * (stride - 1)) // 2
+        self.flatten = flatten
+
+        self.input_channels = input_channels
+        self.middle_channels = input_channels*filters
+        self.output_channels = self.middle_channels*filters
+
+        self.conv1 = nn.Conv3d(
+            in_channels=self.input_channels,
+            out_channels=self.middle_channels,
+            kernel_size=kernel_size,
+            stride=stride,
+            padding=padding
+        )
+        self.conv2 = nn.Conv3d(
+            in_channels=self.middle_channels,
+            out_channels=self.output_channels,
+            kernel_size=kernel_size,
+            stride=stride,
+            padding=padding
+        )
+        self.batchNorm = nn.BatchNorm3d(
+            self.middle_channels,
+            eps=0.001,
+            momentum=0.99
+        )
+        self.flatten = nn.Flatten()
+        self.activation_function = nn.ReLU()
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        out = self.conv1(x)
+        out = self.activation_function(out)
+
+        out = self.batchNorm(out)
+
+        out = self.conv2(out)
+        out = self.activation_function(out)
+
+        if self.flatten:
+            out = out.reshape(out.shape[0], out.shape[1], out.shape[2], -1)
+        return out + x
+
+
+class ResNet50(nn.Module):
+    def __init__(self, num_cls=19, channels=1):
+        super().__init__()
+        self.resnet = models.resnet50()
+
+        self.resnet.conv1 = nn.Sequential(
+            Block(4, 32, 7, False), Block(32, 32, 5))
+        self.resnet.fc = nn.Linear(self.resnet.fc.in_features, num_cls)
+
+    def forward(self, x):
+        x = self.resnet(x)
+
+        return x
 
 
 class ResNet50(pl.LightningModule):
