@@ -43,12 +43,14 @@ class EmbeddingClassifier(pl.LightningModule):
         x, y = batch
         y_hat = self._model(x)
 
+        target = nn.functional.one_hot(y, num_classes=2)
+
         loss = self._loss(y_hat, y)
-        acc = tm.functional.accuracy(y_hat, y, task="binary")
-        prec = tm.functional.precision(y_hat, y, task="binary")
-        rec = tm.functional.recall(y_hat, y, task="binary")
-        f1 = tm.functional.f1_score(y_hat, y, task="binary")
-        auc = tm.functional.auroc(y_hat, y, task="binary")
+        acc = tm.functional.accuracy(y_hat, target, task="binary")
+        prec = tm.functional.precision(y_hat, target, task="binary")
+        rec = tm.functional.recall(y_hat, target, task="binary")
+        f1 = tm.functional.f1_score(y_hat, target, task="binary")
+        auc = tm.functional.auroc(y_hat, target, task="binary")
 
         self.log("val/loss", loss)
         self.log("val/acc", acc)
