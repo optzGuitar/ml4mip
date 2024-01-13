@@ -34,7 +34,6 @@ class EmbeddingModule(pl.LightningModule):
         self._model = ResNet18(512, channels=1)
 
         self.loss = BarlowTwinsLoss()
-        self.nxent_loss = NTXentLoss(memory_bank_size=1024)
 
     def training_step(self, batch, batch_idx):
         if batch_idx % 100 == 0:
@@ -50,7 +49,6 @@ class EmbeddingModule(pl.LightningModule):
         loss = torch.zeros(1, device=batch.device)
         for comb in combinations([z0, z1, z2, z3], 2):
             loss += self.loss(comb[0], comb[1])
-            loss += self.nxent_loss(comb[0], comb[1])
             i += 1
 
         loss /= i
