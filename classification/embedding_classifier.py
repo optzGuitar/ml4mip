@@ -13,7 +13,7 @@ class MGMTClassifier(nn.Module):
         self.model = nn.Linear(512, 2)
 
     def forward(self, x):
-        x = self.model(x)
+        x = self.model(x.view(x.shape[0], -1))
         return x
 
 
