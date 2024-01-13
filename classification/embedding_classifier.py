@@ -4,26 +4,21 @@ from pytorch_lightning.utilities.types import OptimizerLRScheduler
 import torch
 import torch.nn as nn
 import torchmetrics as tm
+import torchvision.models as models
 
 
 class MGMTClassifier(nn.Module):
-    def __init__(self) -> None:
+    def __init__(self, num_cls=19, channels=1):
         super().__init__()
-        self._model = nn.Sequential(
-            nn.Conv2d(4, 32, 5, 2),
-            nn.ReLU(),
-            nn.Conv2d(32, 64, 3, 1),
-            nn.ReLU(),
-            nn.Conv2d(64, 128, 3, 1),
-            nn.ReLU(),
-            nn.AvgPool2d(2),
-        )
-        self._head = nn.Sequential(nn.Linear(128, 2), nn.Softmax(dim=1))
+        self.resnet = models.resnet18()
+
+        self.conv1 = nn.Conv2d(4, 64, kernel_size=(
+            7, 7), stride=(2, 2), padding=(3, 3), bias=False)
+        self.resnet.conv1 = self.conv1
+        self.resnet.fc = nn.Linear(self.resnet.fc.in_features, num_cls)
 
     def forward(self, x):
-        x = self._model(x)
-        x = x.view(x.size(0), -1)
-        x = self._head(x)
+        x = self.resnet(x)
         return x
 
 

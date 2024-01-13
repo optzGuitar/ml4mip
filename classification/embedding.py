@@ -12,9 +12,9 @@ from enums.contrast import ClassificationContrasts
 
 
 class ResNet18(nn.Module):
-    def __init__(self, num_cls=19, channels=1, pretrained=True):
+    def __init__(self, num_cls=19, channels=1):
         super().__init__()
-        self.resnet = models.resnet18(pretrained=pretrained)
+        self.resnet = models.resnet18()
 
         self.conv1 = nn.Conv2d(channels, 64, kernel_size=(
             7, 7), stride=(2, 2), padding=(3, 3), bias=False)
