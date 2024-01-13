@@ -17,7 +17,7 @@ if __name__ == "__main__":
     train_ds = ClassificationDataset(full_augment=False, load_pickled=True)
     train_ds, valid_ds = random_split(train_ds, [0.9, 0.1])
 
-    BATCH_SIZE = 16
+    BATCH_SIZE = 8
 
     train_dataloader = DataLoader(
         train_ds, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
@@ -31,6 +31,7 @@ if __name__ == "__main__":
         max_epochs=model.max_epochs,
         logger=WandbLogger(project="ml4mip"),
         callbacks=[checkpoint_callback],
-        accumulate_grad_batches=4,
+        accumulate_grad_batches=8,
+        log_every_n_steps=1,
     )
     trainer.fit(model, train_dataloader, valid_dataloader)
