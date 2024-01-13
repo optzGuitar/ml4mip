@@ -7,6 +7,7 @@ import torch
 from classification.embedding import ResNet18
 from data.classification import ClassificationDataset
 from torch.utils.data import DataLoader
+import torchio as tio
 
 if __name__ == "__main__":
     os.environ['CUDA_VISIBLE_DEVICES'] = "1"
@@ -22,7 +23,9 @@ if __name__ == "__main__":
         loader = DataLoader(dataset, batch_size=16,
                             shuffle=False, num_workers=4)
         for i, batch in enumerate(loader):
-            data = batch.to(resnet.device)
+            input_images = torch.cat(
+                [i[tio.DATA] for k, i in batch.items() if k != tio.LABEL], dim=1)
+            data = input_images.to(resnet.device)
 
             embedded = []
             slice = slice.permute(4, 0, 1, 2, 3)
