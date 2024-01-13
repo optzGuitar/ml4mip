@@ -14,15 +14,15 @@ from enums.contrast import ClassificationContrasts
 class ResNet18(nn.Module):
     def __init__(self, num_cls=19, channels=1, pretrained=True):
         super().__init__()
-        resnet = models.resnet18(pretrained=pretrained)
+        self.resnet = models.resnet18(pretrained=pretrained)
 
         self.conv1 = nn.Conv2d(channels, 64, kernel_size=(
             7, 7), stride=(2, 2), padding=(3, 3), bias=False)
-        resnet.conv1 = self.conv1
-        resnet.fc = nn.Linear(resnet.fc.in_features, num_cls)
+        self.resnet.conv1 = self.conv1
+        self.resnet.fc = nn.Linear(self.resnet.fc.in_features, num_cls)
 
     def forward(self, x):
-        x = self.encoder(x)
+        x = self.resnet(x)
         x = x.view(x.size(0), -1)
 
         logits = self.FC(x)
