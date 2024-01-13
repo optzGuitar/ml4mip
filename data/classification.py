@@ -104,6 +104,9 @@ class EmbeddedDataset(Dataset):
         targets = pd.read_csv(f"{self._label_path}train_labels.csv")
         self._targets = targets.set_index("ID",)['MGMT_value'].to_dict()
 
+    def __len__(self) -> int:
+        return len(self._embedding_range)
+
     def __getitem__(self, index: int):
         with open(self._path + f"embedding_{index}.pkl", "rb") as f:
             return pickle.load(f), self._targets[index]
