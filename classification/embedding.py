@@ -2,7 +2,7 @@ import pytorch_lightning as pl
 from monai.networks.nets import resnet
 from pytorch_lightning.utilities.types import OptimizerLRScheduler
 import torch.nn as nn
-from lightly.loss import NTXentLoss
+from lightly.loss import BarlowTwinsLoss
 import torchio as tio
 import torch
 from itertools import combinations
@@ -22,7 +22,7 @@ class EmbeddingModule(pl.LightningModule):
         )
         self._model.fc = nn.Linear(self._model.fc.in_features, 128)
 
-        self.loss = NTXentLoss(memory_bank_size=256)
+        self.loss = BarlowTwinsLoss()
 
     def training_step(self, batch, batch_idx):
         if batch_idx % 100 == 0:
