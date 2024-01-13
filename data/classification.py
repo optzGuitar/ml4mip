@@ -102,7 +102,7 @@ class EmbeddedDataset(Dataset):
 
         self._label_path = "/data/classification/"
         targets = pd.read_csv(f"{self._label_path}train_labels.csv")
-        self._targets = targets.set_index("ID",)['MGMT_value'].to_dict()
+        self._targets = targets.set_index("ID",)['MGMT_value'].to_list()
 
     def __len__(self) -> int:
         return len(self._embedding_range)
