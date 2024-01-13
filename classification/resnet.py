@@ -93,19 +93,24 @@ class ResNet50(pl.LightningModule):
     def forward(self, x):
         return self.model(x)
 
-    def training_step(self, batch, batch_idx):
+    def split_batch(self, batch):
         input_images = torch.cat(
             [i[tio.DATA] for k, i in batch.items() if k != tio.LABEL], dim=1)
         label = batch[tio.LABEL]
+        mask = input_images.isnan()
+        if mask.any():
+            input_images[mask] = 0
+        return input_images, label
+
+    def training_step(self, batch, batch_idx):
+        input_images, label = self.split_batch(batch)
         output = self.forward(input_images)
         loss = self.loss_fn(output, label)
         self.log("train/loss", loss, prog_bar=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
-        input_images = torch.cat(
-            [i[tio.DATA] for k, i in batch.items() if k != tio.LABEL], dim=1)
-        label = batch[tio.LABEL]
+        input_images, label = self.split_batch(batch)
         output = self.forward(input_images)
         loss = self.loss_fn(output, label)
 
