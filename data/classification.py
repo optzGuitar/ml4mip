@@ -86,7 +86,7 @@ class EmbeddingDataset(Dataset):
         act_index = index // 128
         orig_subject = self._act_ds[act_index]
         input_images = torch.cat(
-            [orig_subject[contrast][tio.DATA] for contrast in ClassificationContrasts.values()], dim=1)
+            [orig_subject[contrast][tio.DATA] for contrast in ClassificationContrasts.values()], dim=0)
         label = orig_subject[tio.LABEL]
 
         return input_images[:, :, :, (index - act_index) % 128]
