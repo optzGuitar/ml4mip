@@ -15,7 +15,6 @@ class EmbeddingModule(pl.LightningModule):
         super().__init__()
 
         self._model = resnet18(
-            spatial_dims=3,
             num_classes=1,
             n_input_channels=1
         )
