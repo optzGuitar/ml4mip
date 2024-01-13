@@ -80,12 +80,12 @@ class EmbeddingDataset(Dataset):
             full_augment=full_augment, load_pickled=load_pickled)
 
     def __len__(self) -> int:
-        return len(self._act_ds) * 128
+        return len(self._act_ds) * 64
 
     def __getitem__(self, index: int) -> tio.Subject:
-        act_index = index // 128
+        act_index = index // 64
         orig_subject = self._act_ds[act_index]
         input_images = torch.cat(
             [orig_subject[contrast][tio.DATA] for contrast in ClassificationContrasts.values()], dim=0)
 
-        return input_images[:, :, :, (index - (act_index * 128))]
+        return input_images[:, :, :, (index - (act_index * 64))]
