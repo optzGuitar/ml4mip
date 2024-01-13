@@ -1,3 +1,4 @@
+import os
 from data.classification import EmbeddingDataset  # noqa
 import sys  # noqa
 sys.path.insert(0, "/home/tu-leopinetzki/classif")  # noqa
@@ -9,6 +10,7 @@ from torch.utils.data import DataLoader
 from classification.embedding import EmbeddingModule
 
 if __name__ == '__main__':
+    os.environ['CUDA_VISIBLE_DEVICES'] = "1"
     model = EmbeddingModule()
     trainer = pl.Trainer(
         accumulate_grad_batches=4,
