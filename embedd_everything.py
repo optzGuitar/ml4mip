@@ -16,7 +16,7 @@ if __name__ == "__main__":
         resnet.load_state_dict(pickle.load(f))
 
     resnet.eval()
-    resnet.to("cuda:0")
+    resnet = resnet.to("cuda:0")
 
     with torch.no_grad():
         dataset = ClassificationDataset(full_augment=False, load_pickled=True)
@@ -25,7 +25,7 @@ if __name__ == "__main__":
         for i, batch in enumerate(loader):
             input_images = torch.cat(
                 [i[tio.DATA] for k, i in batch.items() if k != tio.LABEL], dim=1)
-            data = input_images.to(resnet.device)
+            data = input_images.to("cuda:0")
 
             embedded = []
             slice = slice.permute(4, 0, 1, 2, 3)
