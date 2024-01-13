@@ -18,6 +18,6 @@ if __name__ == '__main__':
     )
 
     dataset = EmbeddingDataset(full_augment=False, load_pickled=True)
-    dl = DataLoader(dataset, batch_size=32)
+    dl = DataLoader(dataset, batch_size=32, shuffle=True, num_workers=4)
 
     trainer.fit(model, train_dataloaders=dl)
