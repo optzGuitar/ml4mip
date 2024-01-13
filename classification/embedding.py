@@ -33,7 +33,7 @@ class EmbeddingModule(pl.LightningModule):
 
         self._model = ResNet18(512, channels=1)
 
-        self.loss = NTXentLoss(memory_bank_size=1024)
+        self.loss = NTXentLoss(memory_bank_size=512)
 
     def training_step(self, batch, batch_idx):
         if batch_idx % 100 == 0:
