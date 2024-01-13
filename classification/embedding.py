@@ -29,7 +29,7 @@ class EmbeddingModule(pl.LightningModule):
             with open('embedding.pkl', 'wb') as f:
                 pickle.dump(self._model.state_dict(), f)
 
-        input, _ = batch
+        input, _ = self._split_batch(batch)
         z0 = self._model(input[:, 0:1])
         z1 = self._model(input[:, 1:2])
         z2 = self._model(input[:, 3:4])
