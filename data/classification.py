@@ -110,4 +110,6 @@ class EmbeddedDataset(Dataset):
 
     def __getitem__(self, index: int):
         with open(self._path + f"embedding_{index}.pkl", "rb") as f:
-            return pickle.load(f), self._targets[index]
+            loaded = pickle.load(f)
+            loaded[loaded.isnan()] = 0
+            return loaded, self._targets[index]
