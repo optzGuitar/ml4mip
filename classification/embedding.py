@@ -17,7 +17,7 @@ class EmbeddingModule(pl.LightningModule):
 
         self._model = resnet.resnet18(
             num_classes=1,
-            spatial_dims=3,
+            spatial_dims=2,
             n_input_channels=1
         )
         self._model.fc = nn.Identity()
