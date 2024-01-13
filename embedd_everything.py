@@ -11,7 +11,8 @@ from torch.utils.data import DataLoader
 if __name__ == "__main__":
     os.environ['CUDA_VISIBLE_DEVICES'] = "1"
     resnet = ResNet18(512, channels=1)
-    resnet.load_state_dict(pickle.load("embedding_end.pkl"))
+    with open("embedding_end.pkl", "rb") as f:
+        resnet.load_state_dict(pickle.load(f))
 
     resnet.eval()
     resnet.to("cuda:0")
