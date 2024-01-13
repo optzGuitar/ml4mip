@@ -15,6 +15,7 @@ if __name__ == '__main__':
     trainer = pl.Trainer(
         accumulate_grad_batches=4,
         logger=WandbLogger(project="ml4mip"),
+        log_every_n_steps=1,
     )
 
     dataset = EmbeddingDataset(full_augment=False, load_pickled=True)
