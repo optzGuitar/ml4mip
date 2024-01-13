@@ -2,7 +2,7 @@ import pytorch_lightning as pl
 from monai.networks.nets import resnet
 from pytorch_lightning.utilities.types import OptimizerLRScheduler
 import torch.nn as nn
-from lightly.loss import BarlowTwinsLoss
+from lightly.loss import NTXentLoss
 import torchio as tio
 import torch
 from itertools import combinations
@@ -22,7 +22,7 @@ class EmbeddingModule(pl.LightningModule):
         )
         self._model.fc = nn.Linear(self._model.fc.in_features, 128)
 
-        self.loss = BarlowTwinsLoss()
+        self.loss = NTXentLoss(memory_bank_size=256)
 
     def training_step(self, batch, batch_idx):
         if batch_idx % 100 == 0:
@@ -32,7 +32,7 @@ class EmbeddingModule(pl.LightningModule):
         loss = torch.zeros(1, device=batch.device)
         for comb in combinations([0, 1, 2, 3], 2):
             z0 = self._model(batch[:, comb[0]:comb[0]+1])
-            z1 = self._model(batch[:, comb[0]:comb[0]+1])
+            z1 = self._model(batch[:, comb[1]:comb[1]+1])
             loss += self.loss(z0, z1)
             torch.cuda.empty_cache()
 
