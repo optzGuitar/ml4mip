@@ -40,13 +40,16 @@ class EmbeddingModule(pl.LightningModule):
             with open('embedding.pkl', 'wb') as f:
                 pickle.dump(self._model.state_dict(), f)
 
-        loss = torch.zeros(1, device=batch.device)
-        for comb in combinations([0, 1, 2, 3], 2):
-            z0 = self._model(batch[:, comb[0]:comb[0]+1])
-            z1 = self._model(batch[:, comb[1]:comb[1]+1])
-            loss += self.loss(z0, z1)
-            torch.cuda.empty_cache()
+        z0 = self._model(batch[:, 0:1])
+        z1 = self._model(batch[:, 1:2])
+        z2 = self._model(batch[:, 2:3])
+        z3 = self._model(batch[:, 3:4])
 
+        loss = torch.zeros(1, device=batch.device)
+        for comb in combinations([z0, z1, z2, z3], 2):
+            loss += self.loss(comb[0], comb[1])
+
+        torch.cuda.empty_cache()
         self.log("train/loss", loss)
         return loss
 
