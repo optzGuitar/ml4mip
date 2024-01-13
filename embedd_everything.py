@@ -30,16 +30,16 @@ if __name__ == "__main__":
             embedded = []
             slice = data.permute(4, 0, 1, 2, 3)
             orig_shape = slice.shape
-            slice = slice.view(
+            slice = slice.reshape(
                 orig_shape[0] * orig_shape[1], *orig_shape[2:])
 
-            emb0 = resnet(slice[:, 0:1]).view(
+            emb0 = resnet(slice[:, 0:1]).reshape(
                 orig_shape[0], orig_shape[1], -1)
-            emb1 = resnet(data[:, 1:2]).view(
+            emb1 = resnet(data[:, 1:2]).reshape(
                 orig_shape[0], orig_shape[1], -1)
-            emb2 = resnet(data[:, 2:3]).view(
+            emb2 = resnet(data[:, 2:3]).reshape(
                 orig_shape[0], orig_shape[1], -1)
-            emb3 = resnet(data[:, 3:4]).view(
+            emb3 = resnet(data[:, 3:4]).reshape(
                 orig_shape[0], orig_shape[1], -1)
 
             emb0 = emb0.permute(1, 2, 0)
