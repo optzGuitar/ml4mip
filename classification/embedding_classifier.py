@@ -10,15 +10,10 @@ import torchvision.models as models
 class MGMTClassifier(nn.Module):
     def __init__(self):
         super().__init__()
-        self.resnet = models.resnet18()
-
-        self.conv1 = nn.Conv2d(4, 64, kernel_size=(
-            7, 7), stride=(2, 2), padding=(3, 3), bias=False)
-        self.resnet.conv1 = self.conv1
-        self.resnet.fc = nn.Linear(self.resnet.fc.in_features, 2)
+        self.model = nn.Linear(512, 2)
 
     def forward(self, x):
-        x = self.resnet(x)
+        x = self.model(x)
         return x
 
 
