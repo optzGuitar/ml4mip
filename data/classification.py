@@ -72,3 +72,21 @@ class ClassificationDataset(Dataset):
         if self.full_augment:
             candidate = self.__augmentation(candidate)
         return candidate
+
+
+class EmbeddingDataset(Dataset):
+    def __init__(self, full_augment, load_pickled) -> None:
+        self._act_ds = ClassificationDataset(
+            full_augment=full_augment, load_pickled=load_pickled)
+
+    def __len__(self) -> int:
+        return len(self._act_ds) * 128
+
+    def __getitem__(self, index: int) -> tio.Subject:
+        act_index = index // 128
+        orig_subject = self._act_ds[act_index]
+        input_images = torch.cat(
+            [orig_subject[contrast][tio.DATA] for contrast in ClassificationContrasts.values()], dim=1)
+        label = orig_subject[tio.LABEL]
+
+        return input_images[:, :, :, (index - act_index) % 128], label
