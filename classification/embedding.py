@@ -1,5 +1,5 @@
 import pytorch_lightning as pl
-from torchvision.models import resnet18
+from monai.networks.nets import resnet
 import torch.nn as nn
 from lightly.loss import BarlowTwinsLoss
 import torchio as tio
@@ -14,8 +14,9 @@ class EmbeddingModule(pl.LightningModule):
     def __init__(self):
         super().__init__()
 
-        self._model = resnet18(
+        self._model = resnet.resnet18(
             num_classes=1,
+            spatial_dims=3,
             n_input_channels=1
         )
         self._model.fc = nn.Identity()
