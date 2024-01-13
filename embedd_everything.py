@@ -21,7 +21,7 @@ if __name__ == "__main__":
         loader = DataLoader(dataset, batch_size=16,
                             shuffle=False, num_workers=4)
         for i, batch in enumerate(loader):
-            data = batch.to(model.device)
+            data = batch.to(resnet.device)
 
             embedded = []
             slice = slice.permute(4, 0, 1, 2, 3)
