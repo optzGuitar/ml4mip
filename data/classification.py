@@ -50,7 +50,7 @@ class ClassificationDataset(Dataset):
 
     def load_candidate(self, index: int) -> tio.Subject:
         if self._load_pickled:
-            with open(self.picklepath + str(index), "rb") as f:
+            with open(self.picklepath + str(index) + ".pkl", "rb") as f:
                 return pickle.load(f)
         candidate = self.candidates[index]
         path = os.path.join(self.basepath, 'train/', candidate)
