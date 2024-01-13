@@ -45,7 +45,7 @@ class EmbeddingModule(pl.LightningModule):
     def _split_batch(self, batch):
         input_images = torch.cat(
             [batch[contrast][tio.DATA] for contrast in ClassificationContrasts.values()], dim=1)
-        label = batch[tio.LABEL][tio.DATA]
+        label = batch[tio.LABEL]
 
         return input_images, label
 
