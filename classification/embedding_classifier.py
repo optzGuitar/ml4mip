@@ -1,5 +1,6 @@
 from typing import Any
 import pytorch_lightning as pl
+from pytorch_lightning.utilities.types import OptimizerLRScheduler
 import torch
 import torch.nn as nn
 import torchmetrics as tm
@@ -62,3 +63,10 @@ class EmbeddingClassifier(pl.LightningModule):
         self.log("val/auc", auc)
 
         return {"loss": loss, "acc": acc, "prec": prec, "rec": rec, "f1": f1, "auc": auc}
+
+    def configure_optimizers(self) -> OptimizerLRScheduler:
+        optimizer = torch.optim.Adam(self._model.parameters(), lr=0.001)
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer, patience=5, verbose=True)
+        self._model = torch.jit.script(self._model)
+        return {"optimizer": optimizer, "lr_scheduler": scheduler, "monitor": "val/loss"}
