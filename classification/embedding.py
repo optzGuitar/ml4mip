@@ -31,7 +31,7 @@ class EmbeddingModule(pl.LightningModule):
     def __init__(self):
         super().__init__()
 
-        self._model = ResNet18(128, channels=1)
+        self._model = ResNet18(512, channels=1)
 
         self.loss = BarlowTwinsLoss()
         self.nxent_loss = NTXentLoss(memory_bank_size=1024)
