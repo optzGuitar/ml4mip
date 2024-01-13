@@ -31,8 +31,8 @@ class EmbeddingModule(pl.LightningModule):
 
         z0 = self._model(batch[:, 0:1])
         z1 = self._model(batch[:, 1:2])
-        z2 = self._model(batch[:, 3:4])
-        z3 = self._model(batch[:, 4:5])
+        z2 = self._model(batch[:, 2:3])
+        z3 = self._model(batch[:, 3:4])
 
         loss = torch.zeros(1, device=z0.device)
         for comb in combinations([z0, z1, z2, z3], 2):
