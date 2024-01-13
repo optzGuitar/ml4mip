@@ -89,4 +89,4 @@ class EmbeddingDataset(Dataset):
             [orig_subject[contrast][tio.DATA] for contrast in ClassificationContrasts.values()], dim=1)
         label = orig_subject[tio.LABEL]
 
-        return input_images[:, :, :, (index - act_index) % 128], label
+        return input_images[:, :, :, (index - act_index) % 128]

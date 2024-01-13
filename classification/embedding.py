@@ -29,11 +29,10 @@ class EmbeddingModule(pl.LightningModule):
             with open('embedding.pkl', 'wb') as f:
                 pickle.dump(self._model.state_dict(), f)
 
-        input, _ = self._split_batch(batch)
-        z0 = self._model(input[:, 0:1])
-        z1 = self._model(input[:, 1:2])
-        z2 = self._model(input[:, 3:4])
-        z3 = self._model(input[:, 4:5])
+        z0 = self._model(batch[:, 0:1])
+        z1 = self._model(batch[:, 1:2])
+        z2 = self._model(batch[:, 3:4])
+        z3 = self._model(batch[:, 4:5])
 
         loss = torch.zeros(1, device=z0.device)
         for comb in combinations([z0, z1, z2, z3], 2):
@@ -41,13 +40,6 @@ class EmbeddingModule(pl.LightningModule):
 
         self.log("train/loss", loss)
         return loss
-
-    def _split_batch(self, batch):
-        input_images = torch.cat(
-            [batch[contrast][tio.DATA] for contrast in ClassificationContrasts.values()], dim=1)
-        label = batch[tio.LABEL]
-
-        return input_images, label
 
     def configure_optimizers(self) -> OptimizerLRScheduler:
         optimizer = torch.optim.Adam(self.parameters(), lr=0.001)
