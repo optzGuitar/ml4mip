@@ -27,7 +27,8 @@ class MGMTClassifier(nn.Module):
 
 
 class EmbeddingClassifier(pl.LightningModule):
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
+    def __init__(self) -> None:
+        super().__init__()
         self._model = MGMTClassifier()
 
         self._loss = nn.CrossEntropyLoss()
