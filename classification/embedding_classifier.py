@@ -10,7 +10,7 @@ import torchvision.models as models
 class MGMTClassifier(nn.Module):
     def __init__(self):
         super().__init__()
-        self.model = nn.Linear(512, 2)
+        self.model = nn.Linear(131072, 2)
 
     def forward(self, x):
         x = self.model(x.view(x.shape[0], -1))
