@@ -95,7 +95,7 @@ class EmbeddingDataset(Dataset):
         return input_images[:, :, :, (index - (act_index * 64))]
 
 
-class EmbeddingDataset(Dataset):
+class EmbeddedDataset(Dataset):
     def __init__(self) -> None:
         self._path = "embeddings/"
         self._embedding_range = range(468)
