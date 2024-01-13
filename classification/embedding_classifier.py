@@ -7,6 +7,7 @@ import torchmetrics as tm
 
 class MGMTClassifier(nn.Module):
     def __init__(self) -> None:
+        super().__init__()
         self._model = nn.Sequential(
             nn.Conv2d(4, 32, 5, 2),
             nn.ReLU(),
