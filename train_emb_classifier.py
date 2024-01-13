@@ -23,7 +23,7 @@ if __name__ == '__main__':
 
     dataset = EmbeddedDataset()
     train, val = random_split(dataset, [0.9, 0.1])
-    dl = DataLoader(train, batch_size=256, shuffle=True, num_workers=4)
+    dl = DataLoader(train, batch_size=64, shuffle=True, num_workers=4)
     dl_val = DataLoader(val, batch_size=256, shuffle=False, num_workers=4)
 
     trainer.fit(model, train_dataloaders=dl, val_dataloaders=dl_val)
