@@ -1,5 +1,6 @@
 import pytorch_lightning as pl
 from monai.networks.nets import resnet
+from pytorch_lightning.utilities.types import OptimizerLRScheduler
 import torch.nn as nn
 from lightly.loss import BarlowTwinsLoss
 import torchio as tio
@@ -47,3 +48,8 @@ class EmbeddingModule(pl.LightningModule):
         label = batch[tio.LABEL][tio.DATA]
 
         return input_images, label
+
+    def configure_optimizers(self) -> OptimizerLRScheduler:
+        optimizer = torch.optim.Adam(self.parameters(), lr=0.001)
+        self.model = torch.jit.script(self._model)
+        return optimizer
