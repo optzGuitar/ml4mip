@@ -14,7 +14,7 @@ if __name__ == "__main__":
     os.environ['CUDA_VISIBLE_DEVICES'] = "1"
     model = ResNet50(max_epochs=20)
 
-    train_ds = ClassificationDataset(full_augment=False)
+    train_ds = ClassificationDataset(full_augment=False, load_pickled=True)
     train_ds, valid_ds = random_split(train_ds, [0.9, 0.1])
 
     BATCH_SIZE = 16
