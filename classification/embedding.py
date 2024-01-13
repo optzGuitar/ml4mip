@@ -23,11 +23,8 @@ class ResNet18(nn.Module):
 
     def forward(self, x):
         x = self.resnet(x)
-        x = x.view(x.size(0), -1)
 
-        logits = self.FC(x)
-
-        return logits
+        return x
 
 
 class EmbeddingModule(pl.LightningModule):
