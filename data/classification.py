@@ -88,4 +88,8 @@ class EmbeddingDataset(Dataset):
         input_images = torch.cat(
             [orig_subject[contrast][tio.DATA] for contrast in ClassificationContrasts.values()], dim=0)
 
+        mask = input_images.isnan()
+        if mask.any():
+            input_images[mask] = 0
+
         return input_images[:, :, :, (index - (act_index * 64))]
