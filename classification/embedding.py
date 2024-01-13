@@ -20,7 +20,7 @@ class EmbeddingModule(pl.LightningModule):
             spatial_dims=2,
             n_input_channels=1
         )
-        self._model.fc = nn.Identity()
+        self._model.fc = nn.Linear(self._model.fc.in_features, 128)
 
         self.loss = BarlowTwinsLoss()
 
@@ -34,8 +34,8 @@ class EmbeddingModule(pl.LightningModule):
             z0 = self._model(batch[:, comb[0]:comb[0]+1])
             z1 = self._model(batch[:, comb[0]:comb[0]+1])
             loss += self.loss(z0, z1)
+            torch.cuda.empty_cache()
 
-        torch.cuda.empty_cache()
         self.log("train/loss", loss)
         return loss
 
