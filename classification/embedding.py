@@ -38,6 +38,7 @@ class EmbeddingModule(pl.LightningModule):
         for comb in combinations([z0, z1, z2, z3], 2):
             loss += self.loss(comb[0], comb[1])
 
+        torch.cuda.empty_cache()
         self.log("train/loss", loss)
         return loss
 
