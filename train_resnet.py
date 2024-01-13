@@ -17,7 +17,7 @@ if __name__ == "__main__":
     train_ds = ClassificationDataset(full_augment=False, load_pickled=True)
     train_ds, valid_ds = random_split(train_ds, [0.9, 0.1])
 
-    BATCH_SIZE = 4
+    BATCH_SIZE = 2
 
     train_dataloader = DataLoader(
         train_ds, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
