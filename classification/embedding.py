@@ -1,5 +1,5 @@
 import pytorch_lightning as pl
-from monai.networks.nets import resnet
+from torchvision import models
 from pytorch_lightning.utilities.types import OptimizerLRScheduler
 import torch.nn as nn
 from lightly.loss import BarlowTwinsLoss
@@ -11,16 +11,30 @@ import pickle
 from enums.contrast import ClassificationContrasts
 
 
+class ResNet18(nn.Module):
+    def __init__(self, num_cls=19, channels=1, pretrained=True):
+        super().__init__()
+        resnet = models.resnet18(pretrained=pretrained)
+
+        self.conv1 = nn.Conv2d(channels, 64, kernel_size=(
+            7, 7), stride=(2, 2), padding=(3, 3), bias=False)
+        resnet.conv1 = self.conv1
+        resnet.fc = nn.Linear(resnet.fc.in_features, num_cls)
+
+    def forward(self, x):
+        x = self.encoder(x)
+        x = x.view(x.size(0), -1)
+
+        logits = self.FC(x)
+
+        return logits
+
+
 class EmbeddingModule(pl.LightningModule):
     def __init__(self):
         super().__init__()
 
-        self._model = resnet.resnet18(
-            num_classes=1,
-            spatial_dims=2,
-            n_input_channels=1
-        )
-        self._model.fc = nn.Linear(self._model.fc.in_features, 128)
+        self._model = ResNet18(128, channels=1)
 
         self.loss = BarlowTwinsLoss()
 
