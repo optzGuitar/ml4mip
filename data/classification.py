@@ -93,3 +93,17 @@ class EmbeddingDataset(Dataset):
             input_images[mask] = 0
 
         return input_images[:, :, :, (index - (act_index * 64))]
+
+
+class EmbeddingDataset(Dataset):
+    def __init__(self) -> None:
+        self._path = "embeddings/"
+        self._embedding_range = range(468)
+
+        self._label_path = "/data/classification/"
+        targets = pd.read_csv(f"{self._label_path}train_labels.csv")
+        self._targets = targets.set_index("ID",)['MGMT_value'].to_dict()
+
+    def __getitem__(self, index: int):
+        with open(self._path + f"embedding_{index}.pkl", "rb") as f:
+            return pickle.load(f), self._targets[index]
