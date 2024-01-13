@@ -25,7 +25,7 @@ if __name__ == "__main__":
         valid_ds, batch_size=BATCH_SIZE, shuffle=False, num_workers=4)
 
     checkpoint_callback = ModelCheckpoint(
-        dirpath="classification_checkpoints/", save_top_k=10, monitor="val/f1", mode='max')
+        dirpath="classification_checkpoints/", save_top_k=10, monitor="f1", mode='max')
 
     trainer = Trainer(
         max_epochs=model.max_epochs,
