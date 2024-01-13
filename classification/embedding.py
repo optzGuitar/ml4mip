@@ -2,7 +2,7 @@ import pytorch_lightning as pl
 from torchvision import models
 from pytorch_lightning.utilities.types import OptimizerLRScheduler
 import torch.nn as nn
-from lightly.loss import BarlowTwinsLoss
+from lightly.loss import BarlowTwinsLoss, NTXentLoss
 import torchio as tio
 import torch
 from itertools import combinations
@@ -34,6 +34,7 @@ class EmbeddingModule(pl.LightningModule):
         self._model = ResNet18(128, channels=1)
 
         self.loss = BarlowTwinsLoss()
+        self.nxent_loss = NTXentLoss(memory_bank_size=1024)
 
     def training_step(self, batch, batch_idx):
         if batch_idx % 100 == 0:
@@ -45,9 +46,14 @@ class EmbeddingModule(pl.LightningModule):
         z2 = self._model(batch[:, 2:3])
         z3 = self._model(batch[:, 3:4])
 
+        i = 1
         loss = torch.zeros(1, device=batch.device)
         for comb in combinations([z0, z1, z2, z3], 2):
             loss += self.loss(comb[0], comb[1])
+            loss += self.nxent_loss(comb[0], comb[1])
+            i += 1
+
+        loss /= i
 
         self.log("train/loss", loss)
         return loss
