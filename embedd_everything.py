@@ -35,11 +35,11 @@ if __name__ == "__main__":
 
             emb0 = resnet(slice[:, 0:1]).reshape(
                 orig_shape[0], orig_shape[1], -1)
-            emb1 = resnet(data[:, 1:2]).reshape(
+            emb1 = resnet(slice[:, 1:2]).reshape(
                 orig_shape[0], orig_shape[1], -1)
-            emb2 = resnet(data[:, 2:3]).reshape(
+            emb2 = resnet(slice[:, 2:3]).reshape(
                 orig_shape[0], orig_shape[1], -1)
-            emb3 = resnet(data[:, 3:4]).reshape(
+            emb3 = resnet(slice[:, 3:4]).reshape(
                 orig_shape[0], orig_shape[1], -1)
 
             emb0 = emb0.permute(1, 2, 0)
