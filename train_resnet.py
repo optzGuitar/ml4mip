@@ -17,12 +17,12 @@ if __name__ == "__main__":
     train_ds = ClassificationDataset(full_augment=False)
     train_ds, valid_ds = random_split(train_ds, [0.9, 0.1])
 
-    BATCH_SIZE = 4
+    BATCH_SIZE = 16
 
     train_dataloader = DataLoader(
         train_ds, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
     valid_dataloader = DataLoader(
-        valid_ds, batch_size=BATCH_SIZE, shuffle=False, num_workers=7)
+        valid_ds, batch_size=BATCH_SIZE, shuffle=False, num_workers=4)
 
     checkpoint_callback = ModelCheckpoint(
         dirpath="classification_checkpoints/", save_top_k=10, monitor="val/f1", mode='max')
@@ -31,5 +31,6 @@ if __name__ == "__main__":
         max_epochs=model.max_epochs,
         logger=WandbLogger(project="ml4mip"),
         callbacks=[checkpoint_callback],
+        accumulate_grad_batches=4,
     )
     trainer.fit(model, train_dataloader, valid_dataloader)

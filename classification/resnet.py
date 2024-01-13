@@ -57,8 +57,8 @@ class Block(nn.Module):
         return out + x
 
 
-class ResNet50(nn.Module):
-    def __init__(self, num_cls=19, channels=1):
+class ResNet(nn.Module):
+    def __init__(self, num_cls=19):
         super().__init__()
         self.resnet = models.resnet50()
 
@@ -84,11 +84,7 @@ class ResNet50(pl.LightningModule):
         max_epochs=1
     ):
         super().__init__()
-        self.model = resnet.resnet50(
-            spatial_dims=spatial_dims,
-            num_classes=num_classes,
-            n_input_channels=n_input_channels
-        )
+        self.model = ResNet(2)
         self.loss_fn = loss_fn
         self.lr = learning_rate
         self.wd = weight_decay
@@ -127,6 +123,9 @@ class ResNet50(pl.LightningModule):
         self.log("val/auc", auc)
 
         return {"loss": loss, "acc": acc, "prec": prec, "rec": rec, "f1": f1, "auc": auc}
+
+    def on_train_epoch_end(self) -> None:
+        torch.save(self.model.state_dict(), 'resnet50_end.pkl')
 
     def configure_optimizers(self):
         optimizer = AdamW(
