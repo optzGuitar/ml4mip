@@ -58,6 +58,10 @@ class EmbeddingModule(pl.LightningModule):
         self.log("train/loss", loss)
         return loss
 
+    def on_train_epoch_end(self) -> None:
+        with open('embedding_end.pkl', 'wb') as f:
+            pickle.dump(self._model.state_dict(), f)
+
     def configure_optimizers(self) -> OptimizerLRScheduler:
         optimizer = torch.optim.Adam(self.parameters(), lr=0.001)
         self.model = torch.jit.script(self._model)
