@@ -49,11 +49,11 @@ class Block(nn.Module):
 
         out = self.batchNorm(out)
 
+        out = out + x
         out = self.conv2(out)
         out = self.activation_function(out)
 
         if self.should_flatten:
-            out = out + x
             out = out.reshape(orig_shape[0], orig_shape[1], orig_shape[2], -1)
         return out
 
