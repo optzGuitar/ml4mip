@@ -20,7 +20,7 @@ if __name__ == '__main__':
         logger=WandbLogger(project="ml4mip"),
         callbacks=[ModelCheckpoint(monitor="val/f1")],
         log_every_n_steps=1,
-        max_epochs=6,
+        max_epochs=60,
     )
 
     dataset = EmbeddedDataset()
