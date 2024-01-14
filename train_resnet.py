@@ -24,13 +24,9 @@ if __name__ == "__main__":
     valid_dataloader = DataLoader(
         valid_ds, batch_size=BATCH_SIZE, shuffle=False, num_workers=4)
 
-    checkpoint_callback = ModelCheckpoint(
-        dirpath="classification_checkpoints/", save_top_k=10, monitor="val/f1", mode='max')
-
     trainer = Trainer(
         max_epochs=model.max_epochs,
         logger=WandbLogger(project="ml4mip"),
-        callbacks=[checkpoint_callback],
         accumulate_grad_batches=8,
         log_every_n_steps=1,
     )
