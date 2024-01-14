@@ -1,13 +1,11 @@
 import os
 import sys
+sys.path.insert(0, "/home/tu-leopinetzki/ml4mip")  # noqa
 from pytorch_lightning import Trainer
 from pytorch_lightning.loggers import WandbLogger
 from torch.utils.data import DataLoader, random_split
-from pytorch_lightning.callbacks import ModelCheckpoint
 
-from data.classification import ClassificationDataset  # noqa
-sys.path.insert(0, "/home/tu-leopinetzki/ml4mip")  # noqa
-
+from data.classification import ClassificationDataset
 from classification.resnet import ResNet50
 
 if __name__ == "__main__":
