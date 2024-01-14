@@ -26,7 +26,7 @@ if __name__ == "__main__":
     seg_loader = DataLoader(seg_dataset, batch_size=2, shuffle=False)
 
     module = SegModule.load_from_checkpoint(
-        "segmentation_checkpoints/{self.config.run_name}_last.ckpt", config=config)
+        f"segmentation_checkpoints/{config.run_name}_last.ckpt", config=config)
 
     def split_batch(self, batch):
         images = torch.concat(
