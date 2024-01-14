@@ -65,7 +65,7 @@ if __name__ == "__main__":
         cls.load_state_dict(pickle.load(f))
         cls = cls.to("cuda:0")
 
-    pred_cls = pd.DataFrame(columns=["MGMT_probability", "MGMT_value"])
+    pred_classes = pd.DataFrame(columns=["MGMT_probability", "MGMT_value"])
 
     cls.eval()
     with torch.no_grad():
@@ -78,7 +78,7 @@ if __name__ == "__main__":
             probs = embedded[:, pred_cls]
 
             for i, (prob, val) in enumerate(zip(probs, pred_cls)):
-                pred_cls.loc[(n * 64) + i] = [prob, val]
+                pred_classes.loc[(n * 64) + i] = [prob, val]
 
     pred_cls.index.name = "ID"
     pred_cls.index = pred_cls.map(lambda x: f"test_{x}")
