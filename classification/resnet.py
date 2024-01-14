@@ -127,7 +127,7 @@ class ResNet50(pl.LightningModule):
         self.log("val/f1", f1)
         self.log("val/auc", auc)
 
-        return {"loss": loss, "acc": acc, "prec": prec, "rec": rec, "f1": f1, "auc": auc}
+        return {"loss": loss, "acc": acc, "prec": prec, "rec": rec, "val/f1": f1, "auc": auc}
 
     def on_train_epoch_end(self) -> None:
         torch.save(self.model.state_dict(), 'resnet50_end.pkl')
