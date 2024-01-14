@@ -49,6 +49,6 @@ if __name__ == "__main__":
                 idx = (i * config.train_config.batch_size) + n
                 os.makedirs(
                     f"/submission/hazel/segmentation/test_{idx}", exist_ok=True)
-                tio.Image(tensor=segmentation.cpu()).save(
+                tio.ScalarImage(tensor=segmentation.cpu()).save(
                     f"/submission/hazel/segmentation/test_{idx}/test_{idx}_seg.nii.gz"
                 )
