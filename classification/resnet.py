@@ -110,6 +110,7 @@ class ResNet50(pl.LightningModule):
         output = self.forward(input_images)
         loss = self.loss_fn(output, label)
 
+        label = nn.functional.one_hot(label, num_classes=2)
         acc = tm.functional.accuracy(output, label, "binary")
         prec = tm.functional.precision(output, label, "binary")
         rec = tm.functional.recall(output, label, "binary")
