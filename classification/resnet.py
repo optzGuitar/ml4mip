@@ -40,6 +40,7 @@ class Block(nn.Module):
         self.activation_function = nn.ReLU()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        orig_shape = x.shape
         out = self.conv1(x)
         out = self.activation_function(out)
 
@@ -50,7 +51,7 @@ class Block(nn.Module):
 
         if self.should_flatten:
             out = out + x
-            out = out.reshape(out.shape[0], out.shape[1], out.shape[2], -1)
+            out = out.reshape(orig_shape[0], orig_shape[1], orig_shape[2], -1)
         return out
 
 
