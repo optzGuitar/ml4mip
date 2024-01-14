@@ -1,3 +1,4 @@
+import os
 import torch
 from torch.utils.data import DataLoader
 from data.segmentation_data import SegmentationDataset
@@ -46,6 +47,8 @@ if __name__ == "__main__":
 
             for n, segmentation in enumerate(seg):
                 idx = (i * config.train_config.batch_size) + n
+                os.makedirs(
+                    f"/submission/hazel/segmentation/test_{idx}", exist_ok=True)
                 nib.save(
                     nib.Nifti1Image(
                         segmentation.cpu().numpy(),
