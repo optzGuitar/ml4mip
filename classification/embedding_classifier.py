@@ -43,7 +43,7 @@ class EmbeddingClassifier(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self._model(x)
-        loss = self._loss(y_hat, y)
+        loss = -1 * self._loss(y_hat, y)
         self.log("train/loss", loss)
         return loss
 
