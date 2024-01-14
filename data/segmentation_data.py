@@ -9,6 +9,27 @@ import torchio as tio
 import nibabel as nib
 from segmentation.config import SegmentationConfig
 import torch.nn.functional as F
+from dataclasses import dataclass
+
+
+@dataclass
+class Candidate:
+    id: int
+    fullname: str
+
+    @classmethod
+    def from_list(cls, list) -> list:
+        print(list)
+        return [cls(id=int(name.split('_')[1]), fullname=name) for name in list]
+
+    def __lt__(self, other):
+        return self.id < other.id
+
+    def __gt__(self, other):
+        return self.id > other.id
+
+    def __eq__(self, other):
+        return self.id == other.id
 
 
 class SegmentationDataset(Dataset):
@@ -18,7 +39,9 @@ class SegmentationDataset(Dataset):
         if load_test:
             path = "test"
         self.basepath = f"/home/tu-leopinetzki/data/segmentation/{path}"
-        self.candidates = os.walk(self.basepath).__next__()[1]
+        self.candidates = [i.fullname for i in sorted(
+            Candidate.from_list(os.walk(self.basepath).__next__()[1]))
+        ]
 
         self.pickled_path = "/home/tu-leopinetzki/group/hazel/seg_data/"
         self._load_pickled = config.data_config.load_pickle
