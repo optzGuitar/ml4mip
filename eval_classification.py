@@ -5,9 +5,11 @@ import pickle
 
 import torch
 from classification.embedding import ResNet18
+from classification.embedding_classifier import MGMTClassifier
 from data.classification import ClassificationDataset, EmbeddedDataset, EmbeddingDataset
 from torch.utils.data import DataLoader
 import torchio as tio
+import pandas as pd
 
 
 if __name__ == "__main__":
@@ -55,3 +57,27 @@ if __name__ == "__main__":
                     pickle.dump(embedded, f)
 
     embedded_ds = EmbeddedDataset()
+    loader = DataLoader(embedded_ds, batch_size=64,
+                        shuffle=False, num_workers=4)
+
+    cls = MGMTClassifier()
+    with open("embedder.pkl", "rb") as f:
+        cls.load_state_dict(pickle.load(f))
+
+    pred_cls = pd.DataFrame(columns=["MGMT_probability", "MGMT_value"])
+
+    cls.eval()
+    with torch.no_grad():
+        for n, batch in enumerate(loader):
+            data = batch.to("cuda:0")
+            embedded = cls(data)
+
+            pred_cls = torch.argmax(embedded, dim=1)
+            probs = embedded[:, pred_cls]
+
+            for i, (prob, val) in enumerate(zip(probs, pred_cls)):
+                pred_cls.loc[(n * 64) + i] = [prob, val]
+
+    pred_cls.index.name = "ID"
+    pred_cls.index = pred_cls.map(lambda x: f"test_{x}")
+    pred_cls.to_csv("submission.csv", index=True)

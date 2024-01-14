@@ -11,6 +11,25 @@ import torchio as tio
 import pickle
 
 
+@dataclass
+class Candidate:
+    id: int
+    fullname: str
+
+    @classmethod
+    def from_list(cls, list) -> list:
+        return [cls(id=int(name.split('_')[1]), fullname=name) for name in enumerate(list)]
+
+    def __lt__(self, other):
+        return self.id < other.id
+
+    def __gt__(self, other):
+        return self.id > other.id
+
+    def __eq__(self, other):
+        return self.id == other.id
+
+
 class ClassificationDataset(Dataset):
     def __init__(self, full_augment: bool, load_pickled: bool = False, load_test: bool = False) -> None:
         self.basepath = "/data/classification/"
@@ -21,7 +40,9 @@ class ClassificationDataset(Dataset):
         self._load_pickled = load_pickled
         self.full_augment = full_augment
         train_path = os.path.join(self.basepath, 'train/')
-        self.candidates = os.walk(train_path).__next__()[1]
+        self.candidates = [i.fullname for i in sorted(
+            Candidate.from_list(os.walk(train_path).__next__()[1]))
+        ]
 
         transformations = []
         transformations.extend(
