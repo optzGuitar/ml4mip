@@ -9,7 +9,7 @@ import torchvision.models as models
 
 
 class Block(nn.Module):
-    def __init__(self, input_channels, filters, kernel_size, flatten=False):
+    def __init__(self, input_channels, filters, kernel_size, flatten=True):
         super().__init__()
         stride = 2
         padding = ((kernel_size - 1) * (stride - 1)) // 2
@@ -49,8 +49,9 @@ class Block(nn.Module):
         out = self.activation_function(out)
 
         if self.should_flatten:
+            out = out + x
             out = out.reshape(out.shape[0], out.shape[1], out.shape[2], -1)
-        return out + x
+        return out
 
 
 class ResNet(nn.Module):
