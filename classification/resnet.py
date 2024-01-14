@@ -15,26 +15,24 @@ class Block(nn.Module):
         padding = ((kernel_size - 1) * (stride - 1)) // 2
         self.should_flatten = flatten
 
-        self.input_channels = input_channels
-        self.middle_channels = input_channels*filters
-        self.output_channels = self.middle_channels*filters
+        self.channels = input_channels
 
         self.conv1 = nn.Conv3d(
-            in_channels=self.input_channels,
-            out_channels=self.middle_channels,
+            in_channels=self.channels,
+            out_channels=self.channels,
             kernel_size=kernel_size,
             stride=stride,
             padding=padding
         )
         self.conv2 = nn.Conv3d(
-            in_channels=self.middle_channels,
-            out_channels=self.output_channels,
+            in_channels=self.channels,
+            out_channels=self.channels,
             kernel_size=kernel_size,
             stride=stride,
             padding=padding
         )
         self.batchNorm = nn.BatchNorm3d(
-            self.middle_channels,
+            self.channels,
             eps=0.001,
             momentum=0.99
         )
