@@ -18,7 +18,7 @@ if __name__ == '__main__':
     trainer = pl.Trainer(
         logger=WandbLogger(project="ml4mip"),
         log_every_n_steps=1,
-        max_epochs=8,
+        max_epochs=7,
     )
 
     dataset = EmbeddedDataset()
