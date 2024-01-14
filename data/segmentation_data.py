@@ -12,9 +12,12 @@ import torch.nn.functional as F
 
 
 class SegmentationDataset(Dataset):
-    def __init__(self, config: SegmentationConfig, full_augment: bool):
+    def __init__(self, config: SegmentationConfig, full_augment: bool, load_test: bool = False):
         self.full_augment = full_augment
-        self.basepath = "/home/tu-leopinetzki/data/segmentation/train"
+        path = "train"
+        if load_test:
+            path = "test"
+        self.basepath = f"/home/tu-leopinetzki/data/segmentation/{path}"
         self.candidates = os.walk(self.basepath).__next__()[1]
 
         self.pickled_path = "/home/tu-leopinetzki/group/hazel/seg_data/"

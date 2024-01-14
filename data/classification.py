@@ -12,7 +12,7 @@ import pickle
 
 
 class ClassificationDataset(Dataset):
-    def __init__(self, full_augment: bool, load_pickled: bool = False,) -> None:
+    def __init__(self, full_augment: bool, load_pickled: bool = False, load_test: bool = False) -> None:
         self.basepath = "/data/classification/"
         self.picklepath = "class_data/"
         targets = pd.read_csv(f"{self.basepath}train_labels.csv")
@@ -44,6 +44,7 @@ class ClassificationDataset(Dataset):
 
         self.__transforms = tio.Compose(transformations)
         self.__augmentation = tio.Compose(augmentations)
+        self._load_test = load_test
 
     def __len__(self) -> int:
         return len(self.candidates)
@@ -53,7 +54,10 @@ class ClassificationDataset(Dataset):
             with open(self.picklepath + str(index) + ".pkl", "rb") as f:
                 return pickle.load(f)
         candidate = self.candidates[index]
-        path = os.path.join(self.basepath, 'train/', candidate)
+        path = "train/"
+        if self._load_test:
+            path = "test/"
+        path = os.path.join(self.basepath, path, candidate)
 
         images = {}
         for contrast in ClassificationContrasts.values():
@@ -75,9 +79,9 @@ class ClassificationDataset(Dataset):
 
 
 class EmbeddingDataset(Dataset):
-    def __init__(self, full_augment, load_pickled) -> None:
+    def __init__(self, full_augment, load_pickled, load_test) -> None:
         self._act_ds = ClassificationDataset(
-            full_augment=full_augment, load_pickled=load_pickled)
+            full_augment=full_augment, load_pickled=load_pickled, load_test=load_test)
 
     def __len__(self) -> int:
         return len(self._act_ds) * 64
