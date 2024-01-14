@@ -18,7 +18,6 @@ class Candidate:
 
     @classmethod
     def from_list(cls, list) -> list:
-        print(list)
         return [cls(id=int(name.split('_')[1]), fullname=name) for name in enumerate(list)]
 
     def __lt__(self, other):
@@ -40,7 +39,12 @@ class ClassificationDataset(Dataset):
         self._targets = targets.set_index("ID",)['MGMT_value'].to_dict()
         self._load_pickled = load_pickled
         self.full_augment = full_augment
-        train_path = os.path.join(self.basepath, 'train/')
+
+        path = "train"
+        if load_test:
+            path = "test"
+
+        train_path = os.path.join(self.basepath, f'{path}/')
         self.candidates = [i.fullname for i in sorted(
             Candidate.from_list(os.walk(train_path).__next__()[1]))
         ]
