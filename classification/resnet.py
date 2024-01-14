@@ -103,6 +103,7 @@ class ResNet50(pl.LightningModule):
         output = self.forward(input_images)
         loss = self.loss_fn(output, label)
         self.log("train/loss", loss)
+        torch.cuda.empty_cache()
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -123,7 +124,7 @@ class ResNet50(pl.LightningModule):
         self.log("val/rec", rec)
         self.log("val/f1", f1)
         self.log("val/auc", auc)
-
+        torch.cuda.empty_cache()
         return {"loss": loss, "acc": acc, "prec": prec, "rec": rec, "val/f1": f1, "auc": auc}
 
     def on_train_epoch_end(self) -> None:
