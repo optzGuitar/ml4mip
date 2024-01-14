@@ -50,9 +50,8 @@ class Block(nn.Module):
         out = self.activation_function(out)
 
         if self.should_flatten:
-            out = out + x
             out = out.reshape(orig_shape[0], orig_shape[1], orig_shape[2], -1)
-        return out
+        return out + x
 
 
 class ResNet(nn.Module):
