@@ -21,7 +21,7 @@ class MGMTClassifier(nn.Module):
         self.lin2 = nn.Linear(64, 1)
         self.lin3 = nn.Linear(4, 2)
         self.relu = nn.ReLU()
-        self.softmax = nn.Softmax(-1)
+        self.softmax = nn.LogSoftmax(-1)
 
     def forward(self, x):
         x = self.lin(x.permute(0, 1, 3, 2))
