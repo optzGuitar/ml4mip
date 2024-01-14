@@ -75,7 +75,7 @@ if __name__ == "__main__":
             embedded = cls(data)
 
             pred_cls = torch.argmax(embedded, dim=1)
-            probs = embedded[:, pred_cls]
+            probs = embedded[pred_cls]
 
             for i, (prob, val) in enumerate(zip(probs.cpu(), pred_cls.cpu())):
                 pred_classes.loc[(n * 64) + i] = [prob, val]
