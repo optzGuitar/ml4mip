@@ -1,6 +1,6 @@
 import os
 import sys
-sys.path.insert(0, "/home/tu-leopinetzki/ml4mip")  # noqa
+sys.path.insert(0, "/home/tu-leopinetzki/classif")  # noqa
 from pytorch_lightning import Trainer
 from pytorch_lightning.loggers import WandbLogger
 from torch.utils.data import DataLoader, random_split
