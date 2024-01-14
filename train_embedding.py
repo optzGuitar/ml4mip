@@ -11,6 +11,7 @@ from pytorch_lightning.loggers import WandbLogger
 from torch.utils.data import DataLoader
 
 from classification.embedding import EmbeddingModule
+import torchio as tio
 
 if __name__ == '__main__':
     os.environ['CUDA_VISIBLE_DEVICES'] = "1"
@@ -22,7 +23,8 @@ if __name__ == '__main__':
         max_epochs=7,
     )
 
-    dataset = EmbeddingDataset(full_augment=False, load_pickled=True)
+    dataset = EmbeddingDataset(
+        full_augment=False, load_pickled=True, load_test=False)
     dl = DataLoader(dataset, batch_size=64, shuffle=True, num_workers=4)
 
     trainer.fit(model, train_dataloaders=dl)
@@ -35,21 +37,23 @@ if __name__ == '__main__':
         loader = DataLoader(dataset, batch_size=16,
                             shuffle=False, num_workers=4)
         for i, batch in enumerate(loader):
-            data = batch.to(model.device)
+            input_images = torch.cat(
+                [i[tio.DATA] for k, i in batch.items() if k != tio.LABEL], dim=1)
+            data = input_images.to("cuda:0")
 
             embedded = []
-            slice = slice.permute(4, 0, 1, 2, 3)
+            slice = data.permute(4, 0, 1, 2, 3)
             orig_shape = slice.shape
-            slice = slice.view(
+            slice = slice.reshape(
                 orig_shape[0] * orig_shape[1], *orig_shape[2:])
 
-            emb0 = resnet(slice[:, 0:1]).view(
+            emb0 = resnet(slice[:, 0:1]).reshape(
                 orig_shape[0], orig_shape[1], -1)
-            emb1 = resnet(data[:, 1:2]).view(
+            emb1 = resnet(slice[:, 1:2]).reshape(
                 orig_shape[0], orig_shape[1], -1)
-            emb2 = resnet(data[:, 2:3]).view(
+            emb2 = resnet(slice[:, 2:3]).reshape(
                 orig_shape[0], orig_shape[1], -1)
-            emb3 = resnet(data[:, 3:4]).view(
+            emb3 = resnet(slice[:, 3:4]).reshape(
                 orig_shape[0], orig_shape[1], -1)
 
             emb0 = emb0.permute(1, 2, 0)
