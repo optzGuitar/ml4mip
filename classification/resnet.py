@@ -1,8 +1,6 @@
 import pytorch_lightning as pl
-from monai.networks.nets import resnet
 from torch.nn import CrossEntropyLoss
 from torch.optim import AdamW
-from enums.contrast import ClassificationContrasts
 import torch
 import torchio as tio
 import torchmetrics as tm
@@ -75,17 +73,13 @@ class ResNet(nn.Module):
 class ResNet50(pl.LightningModule):
     def __init__(
         self,
-        spatial_dims=3,
-        n_input_channels=4,
-        num_classes=2,
-        loss_fn=CrossEntropyLoss(),
         learning_rate=0.001,
         weight_decay=0.1,
         max_epochs=1
     ):
         super().__init__()
         self.model = ResNet(2)
-        self.loss_fn = loss_fn
+        self.loss_fn = CrossEntropyLoss()
         self.lr = learning_rate
         self.wd = weight_decay
         self.max_epochs = max_epochs
@@ -93,7 +87,7 @@ class ResNet50(pl.LightningModule):
     def forward(self, x):
         return self.model(x)
 
-    def split_batch(self, batch):
+    def _split_batch(self, batch):
         input_images = torch.cat(
             [i[tio.DATA] for k, i in batch.items() if k != tio.LABEL], dim=1)
         label = batch[tio.LABEL]
@@ -103,14 +97,14 @@ class ResNet50(pl.LightningModule):
         return input_images, label
 
     def training_step(self, batch, batch_idx):
-        input_images, label = self.split_batch(batch)
+        input_images, label = self._split_batch(batch)
         output = self.forward(input_images)
         loss = self.loss_fn(output, label)
-        self.log("train/loss", loss, prog_bar=True)
+        self.log("train/loss", loss)
         return loss
 
     def validation_step(self, batch, batch_idx):
-        input_images, label = self.split_batch(batch)
+        input_images, label = self._split_batch(batch)
         output = self.forward(input_images)
         loss = self.loss_fn(output, label)
 
