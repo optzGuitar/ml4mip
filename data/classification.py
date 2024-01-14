@@ -129,7 +129,7 @@ class EmbeddingDataset(Dataset):
 class EmbeddedDataset(Dataset):
     def __init__(self) -> None:
         self._path = "embeddings/"
-        self._embedding_range = range(468)
+        self._embedding_range = range(116)  # 468
 
         self._label_path = "/data/classification/"
         targets = pd.read_csv(f"{self._label_path}train_labels.csv")
