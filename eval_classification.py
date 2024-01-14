@@ -63,6 +63,7 @@ if __name__ == "__main__":
     cls = MGMTClassifier()
     with open("embedder.pkl", "rb") as f:
         cls.load_state_dict(pickle.load(f))
+        cls = cls.to("cuda:0")
 
     pred_cls = pd.DataFrame(columns=["MGMT_probability", "MGMT_value"])
 
