@@ -28,7 +28,7 @@ if __name__ == "__main__":
     module = SegModule.load_from_checkpoint(
         f"/home/tu-leopinetzki/ml4mip/segmentation_checkpoints/{config.run_name}_last.ckpt", segmentation_config=config)
 
-    def split_batch(self, batch):
+    def split_batch(batch):
         images = torch.concat(
             [i[tio.DATA] for k, i in batch.items() if k != tio.LABEL], dim=1)
 
