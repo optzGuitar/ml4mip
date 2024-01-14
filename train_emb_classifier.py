@@ -18,7 +18,7 @@ if __name__ == '__main__':
     model = EmbeddingClassifier()
     trainer = pl.Trainer(
         logger=WandbLogger(project="ml4mip"),
-        callbacks=[ModelCheckpoint(monitor="f1")],
+        callbacks=[ModelCheckpoint(monitor="val/f1")],
         log_every_n_steps=1,
         max_epochs=6,
     )
