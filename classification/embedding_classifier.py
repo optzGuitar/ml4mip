@@ -21,7 +21,7 @@ class MGMTClassifier(nn.Module):
         self.lin2 = nn.Linear(64, 1)
         self.lin3 = nn.Linear(4, 2)
         self.relu = nn.ReLU()
-        self.sigmoid = nn.Sigmoid()
+        self.softmax = nn.Softmax(-1)
 
     def forward(self, x):
         x = self.lin(x.permute(0, 1, 3, 2))
@@ -29,7 +29,7 @@ class MGMTClassifier(nn.Module):
         x = self.lin2(x)
         x = self.relu(x).squeeze(-1)
         x = self.lin3(x)
-        x = self.sigmoid(x)
+        x = self.softmax(x)
         return x
 
 
@@ -43,7 +43,7 @@ class EmbeddingClassifier(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self._model(x)
-        loss = -1 * self._loss(y_hat, y)
+        loss = self._loss(y_hat, y)
         self.log("train/loss", loss)
         return loss
 
