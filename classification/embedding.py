@@ -21,8 +21,10 @@ class ResNet18(nn.Module):
         self.resnet.conv1 = self.conv1
         self.resnet.fc = nn.Linear(self.resnet.fc.in_features, num_cls)
 
+        self.lin = nn.Linear(512, 2)
+
     def forward(self, x):
-        x = self.resnet(x)
+        x = self.lin(x.view(x.shape[0], -1))
 
         return x
 
