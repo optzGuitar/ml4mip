@@ -58,7 +58,7 @@ class Block(nn.Module):
 class ResNet(nn.Module):
     def __init__(self, num_cls=19):
         super().__init__()
-        self.resnet = models.resnet50()
+        self.resnet = models.resnet18()
 
         self.resnet.conv1 = nn.Sequential(
             Block(4, 32, 7, False), Block(32, 32, 5))
