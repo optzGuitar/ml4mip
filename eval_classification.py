@@ -80,6 +80,6 @@ if __name__ == "__main__":
             for i, (prob, val) in enumerate(zip(probs.cpu(), pred_cls.cpu())):
                 pred_classes.loc[(n * 64) + i] = [prob, val]
 
-    pred_cls.index.name = "ID"
-    pred_cls.index = pred_cls.map(lambda x: f"test_{x}")
-    pred_cls.to_csv("submission.csv", index=True)
+    pred_classes.index.name = "ID"
+    pred_classes.index = pred_cls.map(lambda x: f"test_{x}")
+    pred_classes.to_csv("submission.csv", index=True)
