@@ -29,7 +29,7 @@ class Block(nn.Module):
         )
         self.conv2 = nn.Conv3d(
             in_channels=self.channels,
-            out_channels=self.channels,
+            out_channels=64,
             kernel_size=kernel_size,
             stride=stride,
             padding=padding
