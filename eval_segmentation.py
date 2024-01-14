@@ -41,7 +41,7 @@ if __name__ == "__main__":
     with torch.no_grad():
         for i, batch in enumerate(seg_loader):
             x, affine = split_batch(batch)
-
+            x = x.to(module.device)
             seg = module.unet(x)
 
             for n, segmentation in enumerate(seg):
