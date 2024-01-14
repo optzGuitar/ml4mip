@@ -69,8 +69,8 @@ if __name__ == "__main__":
     cls.eval()
     with torch.no_grad():
         for n, batch in enumerate(loader):
-            print(batch)
-            data = batch.to("cuda:0")
+            x, _ = batch
+            data = x.to("cuda:0")
             embedded = cls(data)
 
             pred_cls = torch.argmax(embedded, dim=1)
