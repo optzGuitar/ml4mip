@@ -75,10 +75,9 @@ if __name__ == "__main__":
             embedded = cls(data)
 
             pred_cls = torch.argmax(embedded, dim=1)
-            probs = embedded[pred_cls]
 
-            for i, (prob, val) in enumerate(zip(probs.cpu(), pred_cls.cpu())):
-                pred_classes.loc[(n * 64) + i] = [prob, val]
+            for i, (prob, val) in enumerate(zip(embedded.cpu(), pred_cls.cpu())):
+                pred_classes.loc[(n * 64) + i] = [prob[val], val]
 
     pred_classes.index.name = "ID"
     pred_classes.index = pred_classes.map(lambda x: f"test_{x}")
