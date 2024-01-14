@@ -49,10 +49,6 @@ if __name__ == "__main__":
                 idx = (i * config.train_config.batch_size) + n
                 os.makedirs(
                     f"/submission/hazel/segmentation/test_{idx}", exist_ok=True)
-                nib.save(
-                    nib.Nifti1Image(
-                        segmentation.cpu().numpy(),
-                        affine=affine[n].cpu().numpy()
-                    ),
+                tio.Image(tensor=segmentation).save(
                     f"/submission/hazel/segmentation/test_{idx}/test_{idx}_seg.nii.gz"
                 )
