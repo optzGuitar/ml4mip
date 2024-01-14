@@ -43,7 +43,7 @@ if __name__ == "__main__":
         for i, batch in enumerate(seg_loader):
             x, affine = split_batch(batch)
             x = x.to(module.device)
-            seg = module.unet(x).permute(0, 2, 3, 4, 1).argmax(dim=1)
+            seg = module.unet(x).permute(0, 2, 3, 4, 1).argmax(dim=1).float()
 
             for n, segmentation in enumerate(seg):
                 idx = (i * config.train_config.batch_size) + n
