@@ -27,7 +27,7 @@ class MGMTClassifier(nn.Module):
         x = self.lin(x.permute(0, 1, 3, 2))
         x = self.relu(x).squeeze(-1)
         x = self.lin2(x)
-        x = self.relu(x)
+        x = self.relu(x).squeeze(-1)
         x = self.lin3(x)
         x = self.sigmoid(x)
         return x
