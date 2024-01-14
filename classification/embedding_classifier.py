@@ -17,15 +17,19 @@ class MGMTClassifier(nn.Module):
         self.resnet.conv1 = self.conv1
         self.resnet.fc = nn.Linear(self.resnet.fc.in_features, 2)
 
-        self.lin = nn.Linear(512, 2)
-        self.lin2 = nn.Linear(64, 2)
+        self.lin = nn.Linear(512, 1)
+        self.lin2 = nn.Linear(64, 1)
+        self.lin3 = nn.Linear(4, 2)
         self.relu = nn.ReLU()
+        self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
-        x = self.lin(x)
-        x = self.relu(x)
+        x = self.lin(x.permute(0, 1, 3, 2))
+        x = self.relu(x).squeeze(-1)
         x = self.lin2(x)
         x = self.relu(x)
+        x = self.lin3(x)
+        x = self.sigmoid(x)
         return x
 
 
