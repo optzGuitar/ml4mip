@@ -18,7 +18,7 @@ class Candidate:
 
     @classmethod
     def from_list(cls, list) -> list:
-        return [cls(id=int(name.split('_')[1]), fullname=name) for name in enumerate(list)]
+        return [cls(id=int(name.split('_')[1]), fullname=name) for name in list]
 
     def __lt__(self, other):
         return self.id < other.id
