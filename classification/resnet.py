@@ -12,7 +12,10 @@ class Block(nn.Module):
     def __init__(self, input_channels, filters, kernel_size, flatten=True):
         super().__init__()
         stride = 2
-        padding = ((kernel_size - 1) * (stride - 1))
+        padding = (
+            (7 + (128 - 1) * (stride - 1)) // 2,
+            (7 + (128 - 1) * (stride - 1)) // 2, (7 + (64 - 1) * (stride - 1)) // 2
+        )
         self.should_flatten = flatten
 
         self.channels = input_channels
