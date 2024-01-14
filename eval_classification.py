@@ -77,8 +77,8 @@ if __name__ == "__main__":
             pred_cls = torch.argmax(embedded, dim=1)
 
             for i, (prob, val) in enumerate(zip(embedded.cpu(), pred_cls.cpu())):
-                pred_classes.loc[(n * 64) + i] = [prob[val], val]
+                pred_classes.loc[(n * 64) + i] = [prob[val].item(), val.item()]
 
+    pred_classes.index = pred_classes.index.map(lambda x: f"test_{x}")
     pred_classes.index.name = "ID"
-    pred_classes.index = pred_classes.map(lambda x: f"test_{x}")
     pred_classes.to_csv("submission.csv", index=True)
