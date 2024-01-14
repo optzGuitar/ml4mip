@@ -7,6 +7,7 @@ import sys  # noqa
 sys.path.insert(0, "/home/tu-leopinetzki/classif")  # noqa
 
 import pytorch_lightning as pl
+from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
 from torch.utils.data import DataLoader, random_split
 
@@ -17,6 +18,7 @@ if __name__ == '__main__':
     model = EmbeddingClassifier()
     trainer = pl.Trainer(
         logger=WandbLogger(project="ml4mip"),
+        callbacks=[ModelCheckpoint(monitor="f1")],
         log_every_n_steps=1,
         max_epochs=6,
     )
