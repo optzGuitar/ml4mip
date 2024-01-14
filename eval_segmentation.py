@@ -46,6 +46,7 @@ if __name__ == "__main__":
 
             for n, segmentation in enumerate(seg):
                 idx = (i * config.train_config.batch_size) + n
+                print(affine.shape)
                 nib.save(
                     nib.Nifti1Image(
                         segmentation.cpu().numpy(),
