@@ -13,7 +13,7 @@ class Block(nn.Module):
         super().__init__()
         stride = 2
         padding = ((kernel_size - 1) * (stride - 1)) // 2
-        self.flatten = flatten
+        self.should_flatten = flatten
 
         self.input_channels = input_channels
         self.middle_channels = input_channels*filters
@@ -50,7 +50,7 @@ class Block(nn.Module):
         out = self.conv2(out)
         out = self.activation_function(out)
 
-        if self.flatten:
+        if self.should_flatten:
             out = out.reshape(out.shape[0], out.shape[1], out.shape[2], -1)
         return out + x
 
