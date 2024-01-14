@@ -69,6 +69,7 @@ if __name__ == "__main__":
     cls.eval()
     with torch.no_grad():
         for n, batch in enumerate(loader):
+            print(batch)
             data = batch.to("cuda:0")
             embedded = cls(data)
 
