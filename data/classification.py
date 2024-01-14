@@ -18,6 +18,7 @@ class Candidate:
 
     @classmethod
     def from_list(cls, list) -> list:
+        print(list)
         return [cls(id=int(name.split('_')[1]), fullname=name) for name in list]
 
     def __lt__(self, other):
