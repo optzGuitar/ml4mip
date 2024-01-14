@@ -58,10 +58,9 @@ class Block(nn.Module):
 class ResNet(nn.Module):
     def __init__(self, num_cls=19):
         super().__init__()
-        self.resnet = models.resnet18()
+        self.resnet = models.resnet34()
 
-        self.resnet.conv1 = nn.Sequential(
-            Block(4, 32, 7, False), Block(32, 32, 5))
+        self.resnet.conv1 = Block(4, 32, 7)
         self.resnet.fc = nn.Linear(self.resnet.fc.in_features, num_cls)
 
     def forward(self, x):
