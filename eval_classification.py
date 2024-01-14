@@ -81,5 +81,5 @@ if __name__ == "__main__":
                 pred_classes.loc[(n * 64) + i] = [prob, val]
 
     pred_classes.index.name = "ID"
-    pred_classes.index = pred_cls.map(lambda x: f"test_{x}")
+    pred_classes.index = pred_classes.map(lambda x: f"test_{x}")
     pred_classes.to_csv("submission.csv", index=True)
