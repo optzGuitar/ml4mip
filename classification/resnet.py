@@ -114,7 +114,7 @@ class ResNet50(pl.LightningModule):
         acc = tm.functional.accuracy(output, label, "binary")
         prec = tm.functional.precision(output, label, "binary")
         rec = tm.functional.recall(output, label, "binary")
-        f1 = tm.functional.f1(output, label, "binary")
+        f1 = tm.functional.f1_score(output, label, "binary")
         auc = tm.functional.auroc(output, label, "binary")
 
         self.log("val/loss", loss)
