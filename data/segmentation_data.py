@@ -62,6 +62,7 @@ class SegmentationDataset(Dataset):
 
         self.__transforms = tio.Compose(transformations)
         self.config = config
+        self.load_test = load_test
 
     def __len__(self) -> int:
         return len(self.candidates)
@@ -83,14 +84,15 @@ class SegmentationDataset(Dataset):
             ).unsqueeze(0)
             images[contrast] = tio.ScalarImage(tensor=tensor)
 
-        tensor = torch.as_tensor(
-            nib.load(os.path.join(
-                path, f"{candidate}_seg.nii.gz")
-            ).get_fdata(), dtype=torch.float
-        ).unsqueeze(0)
-        tensor[tensor == 3] = 0
-        tensor[tensor == 4] = 3
-        images['label'] = tio.LabelMap(tensor=tensor)
+        if not self.load_test:
+            tensor = torch.as_tensor(
+                nib.load(os.path.join(
+                    path, f"{candidate}_seg.nii.gz")
+                ).get_fdata(), dtype=torch.float
+            ).unsqueeze(0)
+            tensor[tensor == 3] = 0
+            tensor[tensor == 4] = 3
+            images['label'] = tio.LabelMap(tensor=tensor)
 
         data = tio.Subject(**images)
 
