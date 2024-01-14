@@ -38,7 +38,7 @@ class EmbeddingClassifier(pl.LightningModule):
         super().__init__()
         self._model = MGMTClassifier()
 
-        self._loss = nn.CrossEntropyLoss()
+        self._loss = nn.NLLLoss()
 
     def training_step(self, batch, batch_idx):
         x, y = batch
