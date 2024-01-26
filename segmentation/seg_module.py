@@ -31,6 +31,8 @@ class SegModule(pl.LightningModule):
             segmentation_config,
         )
 
+        self.save_hyperparameters('segmentation_config')
+
     def configure_optimizers(self):
         optim = torch.optim.Adam(
             self.unet.parameters(), lr=self.config.loss_config.start_lr)
