@@ -49,11 +49,17 @@ class SegmentationDataset(Dataset):
         self.pickled_path = "/home/tu-leopinetzki/group/hazel/seg_data/"
         self._load_pickled = config.data_config.load_pickle
 
+        hist_landmarks = {
+            contrast.value: f"/group/hazel/{contrast.value.lower()}_landmarks.npy" for contrast in Contrasts
+        }
+
         transformations = []
         if not self._load_pickled:
-            transformations.extend([tio.ZNormalization(
-                masking_method=tio.ZNormalization.mean),
-                tio.RescaleIntensity((0, 1)),
+            transformations.extend([
+                tio.HistogramStandardization(hist_landmarks),
+                tio.RescaleIntensity(
+                    (-1, 1), percentiles=(0.5, 99.5), in_min_max=(-1000, 1000)),
+                tio.ZNormalization(),
                 tio.CropOrPad(config.data_config.image_size[1:]),
             ])
         if self.full_augment:
