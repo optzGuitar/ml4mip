@@ -20,6 +20,9 @@ class Candidate:
     @classmethod
     def from_list(cls, list) -> list:
         print(list)
+        if "_" not in list[0]:
+            return [cls(id=int(name), fullname=name) for name in list]
+
         return [cls(id=int(name.split('_')[1]), fullname=name) for name in list]
 
     def __lt__(self, other):
