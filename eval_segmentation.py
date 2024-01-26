@@ -46,7 +46,7 @@ if __name__ == "__main__":
             seg = module.unet(x).argmax(dim=1, keepdim=True).float()
 
             for n, segmentation in enumerate(seg):
-                idx = (i * config.train_config.batch_size) + n
+                idx = (i * 2) + n + 1
                 os.makedirs(
                     f"/submission/hazel/segmentation/test_{idx}", exist_ok=True)
                 scalar_image = tio.ScalarImage(tensor=segmentation.cpu())
