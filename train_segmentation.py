@@ -15,7 +15,7 @@ import torchio as tio
 
 def train():
     config = SegmentationConfig(
-        run_name="tio_pipeline_fr",
+        run_name="att_unet",
         train_config=TrainConfig(
             epochs=50,
             gradient_accumulation_steps=16,
@@ -24,7 +24,7 @@ def train():
         loss_config=LossConfig(
             cosine_period=200
         ),
-        data_config=DataConfig(load_pickle=False)
+        data_config=DataConfig(load_pickle=True)
     )
     torch.manual_seed(config.seed)
     checkpoint_callback = ModelCheckpoint(
