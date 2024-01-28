@@ -91,31 +91,25 @@ class SegModule(pl.LightningModule):
 
         seg_hat_onehot = F.one_hot(segmentations_hat_max,
                                    num_classes=self.config.data_config.n_classes)
-        seg_onehot = F.one_hot(
-            segmentation_max, num_classes=self.config.data_config.n_classes)
+
         tumor_score = compute_hausdorff_distance(
             seg_hat_onehot.swapaxes(1, -1)[:, [0, 1, 3]],
-            seg_onehot.swapaxes(1, -1)[:, [0, 1, 3]],
+            y[:, [0, 1, 3]],
         )
         tumor_score = tumor_score.flatten()
         tumor_score = tumor_score[~(tumor_score.isnan() | tumor_score.isinf())]
 
         whole_tumor = compute_hausdorff_distance(
             seg_hat_onehot.swapaxes(1, -1),
-            seg_onehot.swapaxes(1, -1),
+            y,
         )
         whole_tumor = whole_tumor.flatten()
         whole_tumor = whole_tumor[~(whole_tumor.isnan() | whole_tumor.isinf())]
 
-        tumor_mean = tumor_score.mean().item()
-        whole_mean = whole_tumor.mean().item()
-
-        tumor_mean = 0 if tumor_mean is None or tumor_mean == float(
-            'inf') or tumor_mean == float(
-            '-inf') else tumor_mean
-        whole_mean = 0 if whole_mean is None or whole_mean == float(
-            'inf') or tumor_mean == float(
-            '-inf') else whole_mean
+        tumor_mean = tumor_score.mean().item() if len(
+            tumor_score) > 0 else 0
+        whole_mean = whole_tumor.mean().item() if len(
+            whole_tumor) > 0 else 0
 
         self.log(f"{prefix}/tumor_score", tumor_mean)
         self.log(f"{prefix}/whole_tumor", whole_mean)
