@@ -153,8 +153,12 @@ class SegModule(pl.LightningModule):
             x = x.float()
 
             prediction = self.unet(x)
-            metrics = self.metrics(prediction, y, is_train=False)
+            loss = self.loss(prediction, y, False, self.log)
+
+            self.log(f"val/loss", loss.mean().item())
 
             torch.cuda.empty_cache()
 
-            return metrics
+            return {
+                "val/loss": loss,
+            }
