@@ -15,21 +15,21 @@ import torchio as tio
 
 def train():
     config = SegmentationConfig(
-        run_name="att_unet_larger",
+        run_name="att_unet_larger_longer",
         train_config=TrainConfig(
-            epochs=50,
+            epochs=75,
             gradient_accumulation_steps=16,
             batch_size=2,
             num_workers=7,
         ),
         loss_config=LossConfig(
-            cosine_period=200
+            cosine_period=2175,
         ),
         data_config=DataConfig(load_pickle=True)
     )
     torch.manual_seed(config.seed)
     checkpoint_callback = ModelCheckpoint(
-        dirpath="segmentation_checkpoints/", save_top_k=10, monitor="overall_mean", mode='max')
+        dirpath="segmentation_checkpoints/", filename=config.run_name, save_top_k=3, monitor="tr5ain/loss", mode='min')
     trainer = Trainer(
         max_epochs=config.train_config.epochs,
         enable_checkpointing=True,
@@ -61,13 +61,13 @@ def train():
     train_dataloader = DataLoader(
         train_dataset, batch_size=config.train_config.batch_size, num_workers=config.train_config.num_workers
     )
-    val_dataloader = DataLoader(
-        val_dataset, batch_size=1, num_workers=config.train_config.num_workers
-    )
+    # val_dataloader = DataLoader(
+    #    val_dataset, batch_size=1, num_workers=config.train_config.num_workers
+    # )
 
     trainer.fit(model,
                 train_dataloaders=train_dataloader,
-                val_dataloaders=val_dataloader
+                # val_dataloaders=val_dataloader
                 )
 
 
