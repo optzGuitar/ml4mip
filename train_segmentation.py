@@ -15,7 +15,7 @@ import torchio as tio
 
 def train():
     config = SegmentationConfig(
-        run_name="att_unet_larger_longer",
+        run_name="real_att_unet_larger_longer",
         train_config=TrainConfig(
             epochs=75,
             gradient_accumulation_steps=16,
