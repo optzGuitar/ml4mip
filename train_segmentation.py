@@ -15,7 +15,7 @@ import torchio as tio
 
 def train():
     config = SegmentationConfig(
-        run_name="real_att_unet_larger_longer",
+        run_name="final_att_unet",
         train_config=TrainConfig(
             epochs=75,
             gradient_accumulation_steps=16,
@@ -27,9 +27,9 @@ def train():
         ),
         data_config=DataConfig(load_pickle=True)
     )
-    torch.manual_seed(config.seed)
+    generator = torch.manual_seed(config.seed)
     checkpoint_callback = ModelCheckpoint(
-        dirpath="segmentation_checkpoints/", filename=f"{config.run_name}-" + "{epoch:02d}", save_top_k=3, monitor="val_loss", mode='min')
+        dirpath="segmentation_checkpoints/", filename=config.run_name, save_top_k=3, monitor="val/loss", mode='min')
     trainer = Trainer(
         max_epochs=config.train_config.epochs,
         enable_checkpointing=True,
@@ -45,7 +45,9 @@ def train():
             f"segmentation_checkpoints/{config.run_name}_last.ckpt", segmentation_config=config)
     dataset = SegmentationDataset(
         config, True)
-    train_dataset, val_dataset = random_split(dataset, (0.95, 0.05))
+
+    train_dataset, val_dataset = random_split(
+        dataset, (0.95, 0.05), generator=generator)
 
     # sampler = tio.data.LabelSampler(
     #     patch_size=config.data_config.patch_size, label_probabilities=[0.1, 0.3, 0.3, 0.3])

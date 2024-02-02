@@ -119,18 +119,11 @@ class SegModule(pl.LightningModule):
             whole_mean,
         ]).mean())
 
-        torch.cuda.empty_cache()
-
         return {
             "loss": loss,
             **dice_scores,
             "tumor_score": tumor_mean,
             "whole_tumor": whole_mean,
-            "overall_mean": torch.as_tensor([
-                *dice_scores.values(),
-                tumor_mean,
-                whole_mean,
-            ]).mean()
         }
 
     def training_step(self, batch, batch_idx):
@@ -160,5 +153,5 @@ class SegModule(pl.LightningModule):
             torch.cuda.empty_cache()
 
             return {
-                "val_loss": loss,
+                "val/loss": loss,
             }
