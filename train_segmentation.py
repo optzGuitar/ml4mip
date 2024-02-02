@@ -29,7 +29,7 @@ def train():
     )
     torch.manual_seed(config.seed)
     checkpoint_callback = ModelCheckpoint(
-        dirpath="segmentation_checkpoints/", filename=config.run_name, save_top_k=3, monitor="val/loss", mode='min')
+        dirpath="segmentation_checkpoints/", filename=f"{config.run_name}-" + "{epoch:02d}", save_top_k=3, monitor="val_loss", mode='min')
     trainer = Trainer(
         max_epochs=config.train_config.epochs,
         enable_checkpointing=True,

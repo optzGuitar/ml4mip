@@ -160,5 +160,5 @@ class SegModule(pl.LightningModule):
             torch.cuda.empty_cache()
 
             return {
-                "val/loss": loss,
+                "val_loss": loss,
             }
