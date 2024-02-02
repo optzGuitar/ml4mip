@@ -21,7 +21,7 @@ config = SegmentationConfig(
 generator = torch.manual_seed(config.seed)
 
 model = SegModule.load_from_checkpoint(
-    "segmentation_checkpoints/final_att_unet.ckpt", segmentation_config=config
+    "segmentation_checkpoints/final_unet.ckpt", segmentation_config=config
 )
 
 dataset = SegmentationDataset(
