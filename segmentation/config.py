@@ -48,7 +48,7 @@ class LossConfig:
 
 @dataclass
 class ModelConfig:
-    channels: list = field(default_factory=lambda: [64, 64, 512, 2048])
+    channels: list = field(default_factory=lambda: [64, 128, 512, 1024])
     strides: list = field(default_factory=lambda: [2, 2, 2])
     kernels: list = field(default_factory=lambda: [3, 3, 3, 3])
     dropout: float = 0.1
