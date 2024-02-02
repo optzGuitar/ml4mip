@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader, random_split
 import torch
 
 config = SegmentationConfig(
-    run_name="final_att_unet",
+    run_name="final_unet",
     train_config=TrainConfig(
         epochs=75,
         gradient_accumulation_steps=16,
@@ -21,7 +21,7 @@ config = SegmentationConfig(
 generator = torch.manual_seed(config.seed)
 
 model = SegModule.load_from_checkpoint(
-    "final_att_unet", segmentation_config=config
+    "segmentation_checkpoints/final_att_unet.ckpt", segmentation_config=config
 )
 
 dataset = SegmentationDataset(
