@@ -39,7 +39,8 @@ validation_results = []
 for batch in loader:
     with torch.no_grad():
         x, y = model.split_batch(batch)
-        x = x.float()
+        x = x.float().to("cuda:0")
+        y = y.to("cuda:0")
 
         prediction = model.unet(x)
         results = model.metrics(prediction, y, is_train=False)
