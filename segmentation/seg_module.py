@@ -93,7 +93,8 @@ class SegModule(pl.LightningModule):
                                    num_classes=self.config.data_config.n_classes)
 
         tumor_score = compute_hausdorff_distance(
-            seg_hat_onehot.swapaxes(1, -1)[:, [0, 1, 3]],
+            seg_hat_onehot.swapaxes(
+                1, -1)[:, [0, 1, 3]].permute(0, 1, 2, 4, 3),
             y[:, [0, 1, 3]],
         )
         tumor_score = tumor_score.flatten()
