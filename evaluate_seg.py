@@ -42,8 +42,7 @@ for batch in loader:
         x = x.float().to("cuda:0")
         y = y.to("cuda:0")
 
-        prediction = model.unet(x).permute(0, 1, 2, 4, 3)
-        prediction = torch.argmax(prediction, dim=1).float()
+        prediction = model.unet(x)
         results = model.metrics(prediction, y, is_train=False)
         validation_results.append(results)
 
