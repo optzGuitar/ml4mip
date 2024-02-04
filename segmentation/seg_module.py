@@ -101,7 +101,7 @@ class SegModule(pl.LightningModule):
         tumor_score = tumor_score[~(tumor_score.isnan() | tumor_score.isinf())]
 
         whole_tumor = compute_hausdorff_distance(
-            seg_hat_onehot.swapaxes(1, -1),
+            seg_hat_onehot.swapaxes(1, -1).permute(0, 1, 2, 4, 3),
             y,
         )
         whole_tumor = whole_tumor.flatten()
