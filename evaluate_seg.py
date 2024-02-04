@@ -43,6 +43,7 @@ for batch in loader:
         y = y.to("cuda:0")
 
         prediction = model.unet(x).permute(0, 1, 2, 4, 3)
+        prediction = torch.argmax(prediction, dim=1).float()
         results = model.metrics(prediction, y, is_train=False)
         validation_results.append(results)
 
