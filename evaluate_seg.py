@@ -41,6 +41,7 @@ for batch in loader:
         x, y = model.split_batch(batch)
         x = x.float().to("cuda:0")
         y = y.to("cuda:0")
+        print(x.shape, y.shape)
 
         prediction = model.unet(x)
         results = model.metrics(prediction, y, is_train=False)
