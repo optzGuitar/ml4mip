@@ -32,7 +32,7 @@ _, val_dataset = random_split(
 )
 
 loader = DataLoader(
-    val_dataset, batch_size=1, num_workers=config.train_config.num_workers
+    val_dataset, batch_size=2, num_workers=config.train_config.num_workers
 )
 
 validation_results = []
@@ -41,10 +41,8 @@ for batch in loader:
         x, y = model.split_batch(batch)
         x = x.float().to("cuda:0")
         y = y.to("cuda:0")
-        print(x.shape, y.shape)
 
-        prediction = model.unet(x).permute(0, 1, 2, 4, 3)
-        y = y.argmax(dim=1).permute(0, 1, 3, 2)
+        prediction = model.unet(x)
         results = model.metrics(prediction, y, is_train=False)
         validation_results.append(results)
 
