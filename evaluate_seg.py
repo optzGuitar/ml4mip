@@ -44,6 +44,7 @@ for batch in loader:
         print(x.shape, y.shape)
 
         prediction = model.unet(x).permute(0, 1, 2, 4, 3)
+        y = y.argmax(dim=1)
         results = model.metrics(prediction, y, is_train=False)
         validation_results.append(results)
 
