@@ -11,6 +11,7 @@ import torch
 
 
 def compute_difference_map(prediction):
+    # expected shape:  (batch, classes, height, width, depth)
     differences = []
     prediction = F.softmax(prediction, dim=1)
     _, max_index = prediction.max(dim=1, keepdims=True)
@@ -37,6 +38,7 @@ def plot_difference_hist(differences):
 
 
 def plot_colorful_uncertainty_map(differences, uncertainty_mask):
+    # expected shape:  (batch, classes, height, width, depth), output of compute_difference_map
     fig = plt.figure(figsize=(9, 8))
     fig.suptitle("Pair-Wise Uncertainty Map")
 
@@ -101,7 +103,23 @@ def plot_colorful_uncertainty_map(differences, uncertainty_mask):
     plt.savefig("uncertainty_colors.png")
 
 
+def compute_difference_map_best_two(prediction, y_true, y_mask):
+    prediction = F.softmax(prediction, dim=1)
+
+    # Get the indices of the top two predictions directly without sorting
+    _, top_indices = torch.topk(prediction, k=2, dim=1)
+
+    # Extract the probabilities corresponding to the top two indices
+    top_probs = torch.gather(prediction, 1, top_indices)
+
+    # Compute the difference map
+    difference_map = 1 - (top_probs[:, 0] - top_probs[:, 1])
+
+    return difference_map
+
+
 def show_uncertainty_map(uncertainty_mask):
+    # expected output of compute_difference_map
     fig = plt.figure(figsize=(8, 8))
     fig.suptitle("Top-Two uncertainty map")
 
